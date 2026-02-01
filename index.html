@@ -63,6 +63,33 @@
             padding: 2rem;
         }
 
+        /* Dark mode - matches system preference */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #000000;
+            }
+            
+            #pi-display {
+                color: #ffffff;
+            }
+            
+            .new-digit {
+                color: #ffffff;
+            }
+            
+            .info {
+                color: #666;
+            }
+            
+            .digit-count {
+                color: #999;
+            }
+            
+            #pi-display {
+                background-color: transparent !important; /* Override the subtle background in dark mode */
+            }
+        }
+
         .container {
             position: relative;
             width: 100%;
