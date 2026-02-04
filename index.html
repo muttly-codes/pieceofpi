@@ -3,49 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
-    <title>Piece of Pi - Watch π Reveal Itself One Digit Per Hour</title>
-    <meta name="title" content="Piece of Pi - Watch π Reveal Itself One Digit Per Hour">
-    <meta name="description" content="A meditative visualization of pi (π) revealing one new digit every hour. Watch as the infinite decimal slowly transforms into a perfect circle over time.">
-    <meta name="keywords" content="pi, π, mathematics, infinite digits, visualization, meditation, digital art, mathematical constant, circle, geometry">
-    <meta name="author" content="Piece of Pi">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pieceofpi.space/">
-    <meta property="og:title" content="Piece of Pi - Watch π Reveal Itself One Digit Per Hour">
-    <meta property="og:description" content="A meditative visualization of pi (π) revealing one new digit every hour. Watch as the infinite decimal slowly transforms into a perfect circle over time.">
-    <meta property="og:site_name" content="Piece of Pi">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://pieceofpi.space/">
-    <meta property="twitter:title" content="Piece of Pi - Watch π Reveal Itself One Digit Per Hour">
-    <meta property="twitter:description" content="A meditative visualization of pi (π) revealing one new digit every hour. Watch as the infinite decimal slowly transforms into a perfect circle over time.">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://pieceofpi.space/">
-    
-    <!-- Structured Data / Schema.org -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Piece of Pi",
-      "description": "A meditative visualization of pi (π) revealing one new digit every hour, slowly transforming into a perfect circle",
-      "url": "https://pieceofpi.space/",
-      "applicationCategory": "EducationalApplication",
-      "genre": ["Mathematics", "Digital Art", "Visualization"],
-      "keywords": "pi, mathematics, infinite digits, visualization, meditation, digital art, mathematical constant, circle",
-      "browserRequirements": "Requires JavaScript enabled",
-      "operatingSystem": "Any"
-    }
-    </script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>π</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.cdnfonts.com/css/digital-7-mono');
+        
         * {
             margin: 0;
             padding: 0;
@@ -53,345 +15,232 @@
         }
 
         body {
-            background: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'JetBrains Mono', monospace;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            padding: 2rem;
-        }
-
-        /* Dark mode - matches system preference */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #000000;
-            }
-            
-            #pi-display {
-                color: #ffffff;
-            }
-            
-            .new-digit {
-                color: #ffffff;
-            }
-            
-            .info {
-                color: #666;
-            }
-            
-            .digit-count {
-                color: #999;
-            }
-            
-            #pi-display {
-                background-color: transparent !important; /* Override the subtle background in dark mode */
-            }
-        }
-
-        .container {
+            font-family: 'Source Code Pro', monospace;
             position: relative;
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        #pi-display {
-            font-weight: 400;
-            text-align: center;
-            line-height: 1.6;
-            word-break: break-all;
-            position: relative;
-            transition: font-size 0.5s ease-out, border-radius 2s ease-out, 
-                        width 2s ease-out, height 2s ease-out, 
-                        background-color 2s ease-out, transform 3s ease-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Default light mode colors */
-        body {
-            color: #000000;
-        }
-        
-        #pi-display {
-            color: #000000;
-        }
-        
-        /* Spiral animation - applied when circle is complete */
-        @keyframes spiral {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-            100% {
-                transform: rotate(720deg) scale(0.3);
-            }
-        }
-
-        .new-digit {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-weight: 700;
-            pointer-events: none;
-            z-index: 10;
-            transition: opacity 0.3s ease-out;
-            /* Responsive sizing - max 90% of viewport, accounting for "...X" being ~4 characters */
-            font-size: min(22.5vh, 22.5vw); /* 90vw / 4 chars = 22.5vw per char */
-            white-space: nowrap;
-            color: #000000; /* Default light mode */
-        }
-
-        .joining {
-            animation: joinPi 0.8s ease-out forwards;
-            display: inline-block;
-        }
-
-        @keyframes joinPi {
-            0% {
-                transform: scale(1.5);
-                color: #000000;
-            }
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-                color: #000000;
-            }
-        }
-
-        /* Info overlay */
-        .info {
+        /* Background layer with circular gradient */
+        .background {
             position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.75rem;
-            color: #999;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            transition: background 2s ease;
         }
 
-        body:hover .info {
-            opacity: 1;
-        }
-
-        .digit-count {
-            font-weight: 700;
-            color: #666;
-        }
-
-        /* SEO: Visually hidden but accessible to screen readers and search engines */
-        .sr-only {
+        .circle {
             position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
+            border-radius: 50%;
+            transition: background 2s ease;
+        }
+
+        /* Pi digits layer with blend mode */
+        .pi-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
             overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
+            mix-blend-mode: difference;
+            color: white;
+        }
+
+        .pi-grid {
+            font-size: 16px;
+            line-height: 1.4;
+            letter-spacing: 0.15em;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .digit {
+            display: inline;
+            color: inherit;
+        }
+
+        /* LCD/Seven-segment font for time digits */
+        .time-hour {
+            font-family: 'Digital-7 Mono', 'DSEG7Classic', monospace;
+            color: #ff0000;
+            font-weight: 400;
+            font-style: italic;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        }
+
+        .time-colon {
+            font-family: 'Digital-7 Mono', 'DSEG7Classic', monospace;
+            color: #ff0000;
+            font-weight: 400;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 99% { opacity: 0.3; }
+        }
+
+        .time-minute {
+            font-family: 'Digital-7 Mono', 'DSEG7Classic', monospace;
+            color: #00ff00;
+            font-weight: 400;
+            font-style: italic;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
         }
     </style>
 </head>
 <body>
-    <h1 class="sr-only">Piece of Pi - An Infinite Visualization of Pi Revealing One Digit Every Hour</h1>
-    <main role="main" aria-label="Pi visualization">
-        <div class="container">
-            <div id="pi-display" role="img" aria-label="Current digits of pi being displayed"></div>
-        </div>
-        
-        <aside class="info" role="complementary" aria-label="Pi digit statistics">
-            <div>Digit <span class="digit-count" id="count" aria-live="polite">1</span> of π</div>
-            <div style="margin-top: 0.5rem;">Next digit in <span id="timer" aria-live="polite">--:--</span></div>
-        </aside>
-    </main>
+    <div class="background">
+        <div class="circle" id="circle"></div>
+    </div>
+    
+    <div class="pi-container">
+        <div class="pi-grid" id="pi-grid"></div>
+    </div>
 
     <script>
-        // CORRECT digits of pi (after the decimal point) - from the PDF
-        const PI_DIGITS = "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298336733624406566430860213949463952247371907021798609437027705392171762931767523846748184676694051320005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235420199561121290219608640344181598136297747713099605187072113499999983729780499510597317328160963185950244594553469083026425223082533446850352619311881710100031378387528865875332083814206171776691473035982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989";
+        // Pi digits (3. followed by decimal places, ~4500 digits)
+        const PI_DIGITS = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298336733624406566430860213949463952247371907021798609437027705392171762931767523846748184676694051320005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235420199561121290219608640344181598136297747713099605187072113499999983729780499510597317328160963185950244594553469083026425223082533446850352619311881710100031378387528865875332083814206171776691473035982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989386593615338182796823030195203530185296899577362259941389124972177528347913151557485724245415069595082953311686172785588907509838175463746493931925506040092770167113900984882401285836160356370766010471018194295559619894676783744944825537977472684710404753464620804668425906949129331367702898915210475216205696602405803815019351125338243003558764024749647326391419927260426992279678235478163600934172164121992458631503028618297455570674983850549458858692699569092721079750930295532116534498720275596023648066549911988183479775356636980742654252786255181841757467289097777279380008164706001614524919217321721477235014144197356854816136115735255213347574184946843852332390739414333454776241686251898356948556209921922218427255025425688767179049460165346680498862723279178608578438382796797668145410095388378636095068006422512520511739298489608412848862694560424196528502221066118630674427862203919494504712371378696095636437191728746776465757396241389086583264599581339047802759009946576407895126946839835259570982582262052248940772671947826848260147699090264013639443745530506820349625245174939965143142980919065925093722169646151570985838741059788595977297549893016175392846813826868386894277415599185592524595959431049972524680845";
 
-        // FIXED LAUNCH DATE - January 30, 2026 at 10:00 AM Melbourne time (AEDT = UTC+11)
-        // This is when the site first went live
-        const LAUNCH_TIMESTAMP = new Date('2026-01-30T10:00:00+11:00').getTime();
-
-        const piDisplay = document.getElementById('pi-display');
-        const countDisplay = document.getElementById('count');
-        const timerDisplay = document.getElementById('timer');
-        
-        let currentDigitElement = null;
-
-        function calculateCurrentState() {
-            const now = Date.now();
-            const hoursSinceLaunch = Math.floor((now - LAUNCH_TIMESTAMP) / 3600000); // 3600000ms = 1 hour
+        // Find time using sequential pairs method
+        function findTimeSequentialPairs(hour, minute, piDigits) {
+            const hourStr = String(hour).padStart(2, '0');
+            const minuteStr = String(minute).padStart(2, '0');
             
-            // Calculate which digit we should be on
-            const digitIndex = Math.max(0, Math.min(hoursSinceLaunch, PI_DIGITS.length - 1));
+            // Find hour pair
+            const hourPos = piDigits.indexOf(hourStr);
+            if (hourPos === -1) return null;
             
-            // Build the pi string up to the current digit
-            let piString = "3." + PI_DIGITS.substring(0, digitIndex);
+            // Find minute pair after hour
+            const minutePos = piDigits.indexOf(minuteStr, hourPos + 2);
+            if (minutePos === -1) return null;
             
-            // Calculate time until next digit
-            const nextDigitTime = LAUNCH_TIMESTAMP + ((digitIndex + 1) * 3600000);
-            const timeUntilNext = nextDigitTime - now;
-            
-            return {
-                piString,
-                digitIndex,
-                timeUntilNext,
-                currentDigit: PI_DIGITS[digitIndex] || null,
-                nextDigit: PI_DIGITS[digitIndex + 1] || null
-            };
+            return { hourPos, minutePos };
         }
 
-        function updateDisplay() {
-            const state = calculateCurrentState();
+        // Update circle gradient based on time of day
+        function updateBackground() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
             
-            // Update the pi display with trailing ellipsis if there's a next digit coming
-            let displayText = state.piString;
-            if (state.nextDigit) {
-                displayText += '...';
-            }
-            piDisplay.textContent = displayText;
+            // Calculate sun position (0-1, where 0.5 is noon)
+            const timeOfDay = (hours + minutes / 60) / 24;
             
-            updateFontSize(state.piString);
-            updateCircleShape(state.piString);
+            // Calculate brightness using cosine wave (peaks at noon, dips at midnight)
+            const sunHeight = Math.cos((timeOfDay - 0.5) * Math.PI * 2);
             
-            // Update digit count
-            countDisplay.textContent = state.digitIndex + 1;
+            // Map to 0-1 range (0 = midnight dark, 1 = noon bright)
+            const brightness = (sunHeight + 1) / 2;
             
-            // Show the "next digit" overlay if we're within the hour
-            if (state.nextDigit && state.timeUntilNext > 0 && state.timeUntilNext <= 3600000) {
-                showNextDigit(state.nextDigit, state.timeUntilNext);
-            }
+            // Inside circle color (bright at noon, dark at midnight)
+            const insideValue = Math.round(30 + brightness * 225); // 30-255
+            const insideColor = `rgb(${insideValue}, ${insideValue}, ${insideValue})`;
+            
+            // Outside color (opposite - dark at noon, bright at midnight)
+            const outsideValue = Math.round(30 + (1 - brightness) * 225);
+            const outsideColor = `rgb(${outsideValue}, ${outsideValue}, ${outsideValue})`;
+            
+            // Calculate available space (accounting for 1% borders)
+            const availableWidth = window.innerWidth * 0.98;  // 1% border each side
+            const availableHeight = window.innerHeight * 0.98; // 1% border top/bottom
+            
+            // Circle diameter = 90% of smaller available dimension
+            const diameter = Math.min(availableWidth, availableHeight) * 0.9;
+            
+            // Position circle centered in available space
+            const circle = document.getElementById('circle');
+            circle.style.width = diameter + 'px';
+            circle.style.height = diameter + 'px';
+            
+            // Center the circle accounting for borders
+            const leftOffset = (window.innerWidth - diameter) / 2;
+            const topOffset = (window.innerHeight - diameter) / 2;
+            circle.style.left = leftOffset + 'px';
+            circle.style.top = topOffset + 'px';
+            
+            circle.style.background = insideColor;
+            
+            // Set background (corners)
+            document.querySelector('.background').style.background = outsideColor;
         }
 
-        function showNextDigit(digit, timeRemaining) {
-            // Remove old digit element if it exists
-            if (currentDigitElement) {
-                currentDigitElement.remove();
-            }
-            
-            // Create new digit element with leading ellipsis
-            currentDigitElement = document.createElement('div');
-            currentDigitElement.className = 'new-digit';
-            currentDigitElement.textContent = '...' + digit;
-            
-            // Calculate opacity based on time remaining (fade in over the hour)
-            const progress = 1 - (timeRemaining / 3600000); // 0 to 1
-            const opacity = 0.05 + (progress * 0.95); // 0.05 to 1.0
-            currentDigitElement.style.opacity = opacity;
-            
-            document.querySelector('.container').appendChild(currentDigitElement);
+        // Update padding (1% of viewport dimensions)
+        function updatePadding() {
+            const container = document.querySelector('.pi-container');
+            const paddingX = window.innerWidth * 0.01;
+            const paddingY = window.innerHeight * 0.01;
+            container.style.padding = `${paddingY}px ${paddingX}px`;
         }
 
-        function updateFontSize(piString) {
-            const digitCount = piString.length;
-            let fontSize;
+        // Generate pi display with highlighted time digits
+        function generatePiDisplay() {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
             
-            if (digitCount < 10) {
-                fontSize = 120;
-            } else if (digitCount < 30) {
-                fontSize = Math.max(60, 120 - (digitCount - 10) * 3);
-            } else if (digitCount < 100) {
-                fontSize = Math.max(24, 60 - (digitCount - 30) * 0.5);
-            } else if (digitCount < 300) {
-                fontSize = Math.max(14, 24 - (digitCount - 100) * 0.05);
-            } else {
-                fontSize = Math.max(10, 14 - (digitCount - 300) * 0.01);
+            const timePos = findTimeSequentialPairs(hour, minute, PI_DIGITS);
+            
+            if (!timePos) {
+                // Fallback if time not found
+                document.getElementById('pi-grid').textContent = PI_DIGITS;
+                return;
             }
             
-            piDisplay.style.fontSize = fontSize + 'px';
-        }
-
-        function updateCircleShape(piString) {
-            const digitCount = piString.length;
-            let borderRadius = 0;
-            let padding = '0';
-            let width = 'auto';
-            let height = 'auto';
-            let backgroundColor = 'transparent';
+            const { hourPos, minutePos } = timePos;
             
-            // Start forming circle after 30 digits
-            if (digitCount > 30 && digitCount <= 150) {
-                const progress = Math.min((digitCount - 30) / 120, 1); // Full circle by 150 digits
-                borderRadius = progress * 50;
+            // Build the display with highlighted digits
+            let html = '';
+            
+            for (let i = 0; i < PI_DIGITS.length; i++) {
+                const digit = PI_DIGITS[i];
                 
-                // Create a fixed circular container
-                if (digitCount > 40) {
-                    const size = Math.min(300 + (digitCount * 2), 800); // Grow from 300px to 800px max
-                    width = size + 'px';
-                    height = size + 'px';
-                    padding = '3rem';
-                    
-                    // Very subtle background to show the circle (nearly invisible)
-                    const bgOpacity = Math.min(progress * 0.03, 0.03);
-                    backgroundColor = `rgba(0, 0, 0, ${bgOpacity})`;
+                // Hour digits (2 digits)
+                if (i === hourPos) {
+                    html += `<span class="time-hour">${digit}`;
+                } else if (i === hourPos + 1) {
+                    html += `${digit}</span><span class="time-colon">:</span>`;
+                }
+                // Minute digits (2 digits)
+                else if (i === minutePos) {
+                    html += `<span class="time-minute">${digit}`;
+                } else if (i === minutePos + 1) {
+                    html += `${digit}</span>`;
+                }
+                // Regular digits (including the "3.")
+                else {
+                    html += `<span class="digit">${digit}</span>`;
                 }
             }
-            // SPIRAL PHASE: After circle is complete (150+ digits)
-            else if (digitCount > 150) {
-                borderRadius = 50; // Keep it circular
-                
-                // Calculate spiral progression
-                const spiralProgress = (digitCount - 150) / 200; // Spiral over next 200 digits
-                const rotations = Math.min(spiralProgress * 10, 10); // Up to 10 full rotations
-                const scale = Math.max(0.1, 1 - (spiralProgress * 0.9)); // Shrink to 10% of original
-                
-                // Apply spiral transformation
-                piDisplay.style.transform = `rotate(${rotations * 360}deg) scale(${scale})`;
-                
-                // Size gets smaller as it spirals
-                const size = Math.max(100, 600 - (spiralProgress * 500));
-                width = size + 'px';
-                height = size + 'px';
-                padding = '2rem';
-                
-                backgroundColor = `rgba(0, 0, 0, 0.03)`;
-            }
             
-            piDisplay.style.borderRadius = borderRadius + '%';
-            piDisplay.style.padding = padding;
-            piDisplay.style.width = width;
-            piDisplay.style.height = height;
-            piDisplay.style.backgroundColor = backgroundColor;
+            document.getElementById('pi-grid').innerHTML = html;
         }
 
-        function updateTimer() {
-            const state = calculateCurrentState();
-            
-            if (state.timeUntilNext <= 0) {
-                timerDisplay.textContent = '00:00';
-                // Refresh display when new digit should appear
-                updateDisplay();
-            } else {
-                const minutes = Math.floor(state.timeUntilNext / 60000);
-                const seconds = Math.floor((state.timeUntilNext % 60000) / 1000);
-                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
+        // Initialize and update
+        function init() {
+            updatePadding();
+            updateBackground();
+            generatePiDisplay();
         }
 
-        // Initialize
-        updateDisplay();
-        updateTimer();
+        // Update every second
+        init();
+        setInterval(() => {
+            updateBackground();
+            generatePiDisplay();
+        }, 1000);
 
-        // Update timer every second
-        setInterval(updateTimer, 1000);
-
-        // Update display every minute (in case we need to add a new digit)
-        setInterval(updateDisplay, 60000);
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            updatePadding();
+            updateBackground();
+        });
     </script>
-
-    <!-- GoatCounter Analytics - Replace YOUR-CODE with your actual GoatCounter code -->
-    <script data-goatcounter="https://pieceofpi.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
