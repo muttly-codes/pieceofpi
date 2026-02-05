@@ -1,2 +1,2 @@
 # pieceofpi
-Meditative, slow Pi builder 
+Watch π 
