@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>π</title>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Crimson+Text:wght@400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.cdnfonts.com/css/digital-7-mono');
-        
         * {
             margin: 0;
             padding: 0;
@@ -18,229 +17,620 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            font-family: 'Source Code Pro', monospace;
+            background: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Main container */
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Formula zone - 85% height */
+        .formula-zone {
+            width: 90%;
+            height: 85%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             position: relative;
+            border-bottom: 2px solid #333;
         }
 
-        /* Background layer with circular gradient */
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            transition: background 2s ease;
+        /* Formula display */
+        .formula {
+            font-size: 8vw;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 2rem;
+            user-select: none;
         }
 
-        .circle {
+        /* Difficulty-specific typography */
+        .formula.easy {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            /* Flat 2D - no effects */
+        }
+
+        .formula.medium {
+            font-family: 'Crimson Text', serif;
+            font-weight: 400;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .formula.hard {
+            font-family: 'Lora', serif;
+            font-weight: 500;
+            /* Extruded effect - multiple shadows creating depth */
+            text-shadow: 
+                1px 0px 0 #4a4a4a,
+                0px 1px 0 #0a0a0a,
+                1px 1px 0 #2a2a2a,
+                2px 1px 0 #4a4a4a,
+                1px 2px 0 #0a0a0a,
+                2px 2px 0 #2a2a2a,
+                3px 2px 0 #4a4a4a,
+                2px 3px 0 #0a0a0a,
+                3px 3px 0 #2a2a2a,
+                4px 3px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .formula.expert {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            font-style: italic;
+            /* Monument effect - sculptural with ground shadow */
+            text-shadow:
+                1px 1px 0 #0a0a0a,
+                2px 2px 0 #1a1a1a,
+                3px 3px 0 #2a2a2a,
+                4px 4px 0 #3a3a3a,
+                5px 5px 0 #4a4a4a,
+                6px 6px 0 #5a5a5a,
+                0 10px 20px rgba(0, 0, 0, 0.4),
+                0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Graphics container */
+        .graphic {
+            margin-top: 2rem;
+        }
+
+        /* SVG styling */
+        svg {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+        }
+
+        svg.medium {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        svg.hard {
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+        }
+
+        svg.expert {
+            filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+        }
+
+        /* Hint button */
+        .hint-button {
             position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: none;
+            border: 2px solid #333;
             border-radius: 50%;
-            transition: background 2s ease;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        /* Pi digits layer with blend mode */
-        .pi-container {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .hint-button:hover {
+            background: #333;
+            transform: scale(1.1);
+        }
+
+        /* Hint panel */
+        .hint-panel {
+            position: absolute;
+            bottom: 5rem;
+            right: 2rem;
+            background: white;
+            border: 2px solid #333;
+            padding: 2rem;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            display: none;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .hint-panel.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Working area - 10% height */
+        .working-area {
+            width: 90%;
+            height: 10%;
+            margin: 0 auto;
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .working-input {
             width: 100%;
-            height: 100%;
-            z-index: 2;
-            overflow: hidden;
-            mix-blend-mode: difference;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            padding: 0.5rem;
+            border: 1px solid #666;
+            background: white;
+            resize: none;
+            outline: none;
+        }
+
+        /* Screenshot button */
+        .screenshot-button {
+            align-self: center;
+            padding: 0.5rem 2rem;
+            background: #333;
             color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s ease;
         }
 
-        .pi-grid {
-            font-size: 16px;
-            line-height: 1.4;
-            letter-spacing: 0.15em;
-            word-wrap: break-word;
-            word-break: break-all;
+        .screenshot-button.visible {
+            display: block;
         }
 
-        .digit {
-            display: inline;
-            color: inherit;
+        .screenshot-button:hover {
+            background: #000;
+            transform: translateY(-2px);
         }
 
-        /* LCD/Seven-segment font for time digits */
-        .time-hour {
-            font-family: 'Digital-7 Mono', 'DSEG7Classic', monospace;
-            color: #ff0000;
-            font-weight: 400;
-            font-style: italic;
-            text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
-        }
-
-        .time-colon {
-            font-family: 'Digital-7 Mono', 'DSEG7Classic', monospace;
-            color: #ff0000;
-            font-weight: 400;
-            animation: blink 2s infinite;
-        }
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 99% { opacity: 0.3; }
-        }
-
-        .time-minute {
-            font-family: 'Digital-7 Mono', 'DSEG7Classic', monospace;
-            color: #00ff00;
-            font-weight: 400;
-            font-style: italic;
-            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+        /* Variable display */
+        .variable {
+            font-size: 4vw;
+            color: #333;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
-    <div class="background">
-        <div class="circle" id="circle"></div>
-    </div>
-    
-    <div class="pi-container">
-        <div class="pi-grid" id="pi-grid"></div>
+    <div class="container">
+        <div class="formula-zone" id="formula-zone">
+            <div class="formula" id="formula"></div>
+            <div class="variable" id="variable"></div>
+            <div class="graphic" id="graphic"></div>
+            <button class="hint-button" id="hint-button" title="Show hint">💡</button>
+            <div class="hint-panel" id="hint-panel"></div>
+        </div>
+
+        <div class="working-area">
+            <textarea 
+                class="working-input" 
+                id="working-input" 
+                placeholder="Your working..."
+                rows="3"
+            ></textarea>
+            <button class="screenshot-button" id="screenshot-button">📷 Screenshot</button>
+        </div>
     </div>
 
     <script>
-        // Pi digits (3. followed by decimal places, ~4500 digits)
-        const PI_DIGITS = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298336733624406566430860213949463952247371907021798609437027705392171762931767523846748184676694051320005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235420199561121290219608640344181598136297747713099605187072113499999983729780499510597317328160963185950244594553469083026425223082533446850352619311881710100031378387528865875332083814206171776691473035982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989386593615338182796823030195203530185296899577362259941389124972177528347913151557485724245415069595082953311686172785588907509838175463746493931925506040092770167113900984882401285836160356370766010471018194295559619894676783744944825537977472684710404753464620804668425906949129331367702898915210475216205696602405803815019351125338243003558764024749647326391419927260426992279678235478163600934172164121992458631503028618297455570674983850549458858692699569092721079750930295532116534498720275596023648066549911988183479775356636980742654252786255181841757467289097777279380008164706001614524919217321721477235014144197356854816136115735255213347574184946843852332390739414333454776241686251898356948556209921922218427255025425688767179049460165346680498862723279178608578438382796797668145410095388378636095068006422512520511739298489608412848862694560424196528502221066118630674427862203919494504712371378696095636437191728746776465757396241389086583264599581339047802759009946576407895126946839835259570982582262052248940772671947826848260147699090264013639443745530506820349625245174939965143142980919065925093722169646151570985838741059788595977297549893016175392846813826868386894277415599185592524595959431049972524680845";
+        // Formula library organized by difficulty
+        const FORMULAS = {
+            easy: [
+                { type: 'multiply', formula: 'π × n', hint: 'π ≈ 3.14159...\nMultiply π by n to get the answer.' },
+                { type: 'circumference', formula: '2πr', hint: 'Circumference of a circle:\nC = 2πr\nWhere r is the radius.' },
+                { type: 'diameter', formula: 'πd', hint: 'Circumference using diameter:\nC = πd\nWhere d is the diameter.' },
+                { type: 'divide', formula: 'n ÷ π', hint: 'Divide n by π.\nπ ≈ 3.14159...' },
+                { type: 'simple_add', formula: 'π + n', hint: 'Add π to n.\nπ ≈ 3.14159...' }
+            ],
+            medium: [
+                { type: 'area', formula: 'πr²', hint: 'Area of a circle:\nA = πr²\nWhere r is the radius.' },
+                { type: 'pi_e', formula: 'π × e × n', hint: 'e ≈ 2.71828...\nMultiply π, e, and n.' },
+                { type: 'pi_squared', formula: 'π² × n', hint: 'π² ≈ 9.8696...\nSquare π first, then multiply by n.' },
+                { type: 'sqrt_pi', formula: '√(π × n)', hint: 'Multiply π by n,\nthen take the square root.' },
+                { type: 'pi_cubed', formula: 'π³ × n', hint: 'π³ ≈ 31.006...\nCube π, then multiply by n.' },
+                { type: 'e_over_pi', formula: '(e/π) × n', hint: 'e/π ≈ 0.865...\nDivide e by π, then multiply by n.' }
+            ],
+            hard: [
+                { type: 'sector', formula: '(θ/360) × πr²', hint: 'Area of a sector:\nA = (θ/360) × πr²\nWhere θ is angle in degrees,\nr is radius.' },
+                { type: 'golden', formula: 'φ × π × n', hint: 'φ (golden ratio) ≈ 1.618...\nMultiply φ, π, and n.' },
+                { type: 'trig_pi', formula: 'sin(θ) × π × n', hint: 'Calculate sine of angle θ (in degrees),\nthen multiply by π and n.' },
+                { type: 'inscribed', formula: 'Inscribed ○', hint: 'Circle inscribed in a triangle.\nFind the inradius using:\nr = Area / semi-perimeter' },
+                { type: 'cos_pi', formula: 'cos(θ) × π × n', hint: 'Calculate cosine of angle θ,\nmultiply by π and n.' },
+                { type: 'tan_e', formula: 'tan(θ) × e × n', hint: 'Calculate tangent of angle θ,\nmultiply by e and n.' }
+            ],
+            expert: [
+                { type: 'sphere', formula: '(4/3)πr³', hint: 'Volume of a sphere:\nV = (4/3)πr³\nWhere r is the radius.' },
+                { type: 'complex_trig', formula: 'tan(θ) × e × π', hint: 'Calculate tangent of angle θ,\nmultiply by both e and π.' },
+                { type: 'nested', formula: '√(π² × e × n)', hint: 'Square π, multiply by e and n,\nthen take the square root of the result.' },
+                { type: 'inscribed_complex', formula: 'Inscribed ○ in △', hint: 'Circle inscribed in a triangle.\nGiven: two sides and one angle.\nFind inradius using trigonometry.' },
+                { type: 'cone', formula: '(1/3)πr²h', hint: 'Volume of a cone:\nV = (1/3)πr²h\nWhere r is radius, h is height.' },
+                { type: 'logarithm', formula: 'ln(π × e²) × n', hint: 'Natural logarithm of (π × e²),\nthen multiply by n.' }
+            ]
+        };
 
-        // Find time using sequential pairs method
-        function findTimeSequentialPairs(hour, minute, piDigits) {
-            const hourStr = String(hour).padStart(2, '0');
-            const minuteStr = String(minute).padStart(2, '0');
-            
-            // Find hour pair
-            const hourPos = piDigits.indexOf(hourStr);
-            if (hourPos === -1) return null;
-            
-            // Find minute pair after hour
-            const minutePos = piDigits.indexOf(minuteStr, hourPos + 2);
-            if (minutePos === -1) return null;
-            
-            return { hourPos, minutePos };
+        const PI = Math.PI;
+        const E = Math.E;
+        const PHI = (1 + Math.sqrt(5)) / 2; // Golden ratio
+
+        // Get difficulty based on minute distribution
+        function getDifficulty(minute) {
+            const rand = (minute * 17 + 53) % 100; // Deterministic pseudo-random
+            if (rand < 35) return 'easy';
+            if (rand < 75) return 'medium';
+            if (rand < 95) return 'hard';
+            return 'expert';
         }
 
-        // Update circle gradient based on time of day
-        function updateBackground() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            
-            // Calculate sun position (0-1, where 0.5 is noon)
-            const timeOfDay = (hours + minutes / 60) / 24;
-            
-            // Calculate brightness using cosine wave (peaks at noon, dips at midnight)
-            const sunHeight = Math.cos((timeOfDay - 0.5) * Math.PI * 2);
-            
-            // Map to 0-1 range (0 = midnight dark, 1 = noon bright)
-            const brightness = (sunHeight + 1) / 2;
-            
-            // Inside circle color (bright at noon, dark at midnight)
-            const insideValue = Math.round(30 + brightness * 225); // 30-255
-            const insideColor = `rgb(${insideValue}, ${insideValue}, ${insideValue})`;
-            
-            // Outside color (opposite - dark at noon, bright at midnight)
-            const outsideValue = Math.round(30 + (1 - brightness) * 225);
-            const outsideColor = `rgb(${outsideValue}, ${outsideValue}, ${outsideValue})`;
-            
-            // Calculate available space (accounting for 1% borders)
-            const availableWidth = window.innerWidth * 0.98;  // 1% border each side
-            const availableHeight = window.innerHeight * 0.98; // 1% border top/bottom
-            
-            // Circle diameter = 90% of smaller available dimension
-            const diameter = Math.min(availableWidth, availableHeight) * 0.9;
-            
-            // Position circle centered in available space
-            const circle = document.getElementById('circle');
-            circle.style.width = diameter + 'px';
-            circle.style.height = diameter + 'px';
-            
-            // Center the circle accounting for borders
-            const leftOffset = (window.innerWidth - diameter) / 2;
-            const topOffset = (window.innerHeight - diameter) / 2;
-            circle.style.left = leftOffset + 'px';
-            circle.style.top = topOffset + 'px';
-            
-            circle.style.background = insideColor;
-            
-            // Set background (corners)
-            document.querySelector('.background').style.background = outsideColor;
+        // Pick formula for current minute
+        function pickFormula(minute, difficulty) {
+            const formulas = FORMULAS[difficulty];
+            const index = minute % formulas.length;
+            return formulas[index];
         }
 
-        // Update padding (1% of viewport dimensions)
-        function updatePadding() {
-            const container = document.querySelector('.pi-container');
-            const paddingX = window.innerWidth * 0.01;
-            const paddingY = window.innerHeight * 0.01;
-            container.style.padding = `${paddingY}px ${paddingX}px`;
-        }
-
-        // Generate pi display with highlighted time digits
-        function generatePiDisplay() {
-            const now = new Date();
-            const hour = now.getHours();
-            const minute = now.getMinutes();
+        // Solve backwards to find variable
+        function solveForVariable(time, formulaObj) {
+            const T = parseInt(time);
             
-            const timePos = findTimeSequentialPairs(hour, minute, PI_DIGITS);
-            
-            if (!timePos) {
-                // Fallback if time not found
-                document.getElementById('pi-grid').textContent = PI_DIGITS;
-                return;
-            }
-            
-            const { hourPos, minutePos } = timePos;
-            
-            // Build the display with highlighted digits
-            let html = '';
-            
-            for (let i = 0; i < PI_DIGITS.length; i++) {
-                const digit = PI_DIGITS[i];
+            switch(formulaObj.type) {
+                case 'multiply':
+                    return { var: 'n', value: (T / PI).toFixed(2) };
                 
-                // Hour digits (2 digits)
-                if (i === hourPos) {
-                    html += `<span class="time-hour">${digit}`;
-                } else if (i === hourPos + 1) {
-                    html += `${digit}</span><span class="time-colon">:</span>`;
-                }
-                // Minute digits (2 digits)
-                else if (i === minutePos) {
-                    html += `<span class="time-minute">${digit}`;
-                } else if (i === minutePos + 1) {
-                    html += `${digit}</span>`;
-                }
-                // Regular digits (including the "3.")
-                else {
-                    html += `<span class="digit">${digit}</span>`;
-                }
+                case 'circumference':
+                    return { var: 'r', value: (T / (2 * PI)).toFixed(2), graphic: 'circle' };
+                
+                case 'diameter':
+                    return { var: 'd', value: (T / PI).toFixed(2), graphic: 'circle' };
+                
+                case 'divide':
+                    return { var: 'n', value: (T * PI).toFixed(2) };
+                
+                case 'simple_add':
+                    return { var: 'n', value: (T - PI).toFixed(2) };
+                
+                case 'area':
+                    return { var: 'r', value: Math.sqrt(T / PI).toFixed(2), graphic: 'circle' };
+                
+                case 'pi_e':
+                    return { var: 'n', value: (T / (PI * E)).toFixed(2) };
+                
+                case 'pi_squared':
+                    return { var: 'n', value: (T / (PI * PI)).toFixed(2) };
+                
+                case 'sqrt_pi':
+                    const n_sqrt = (T * T) / PI;
+                    return { var: 'n', value: n_sqrt.toFixed(2) };
+                
+                case 'pi_cubed':
+                    return { var: 'n', value: (T / (PI * PI * PI)).toFixed(2) };
+                
+                case 'e_over_pi':
+                    return { var: 'n', value: (T / (E / PI)).toFixed(2) };
+                
+                case 'sector':
+                    // Assume θ = 90 for variety
+                    const theta = 60 + (T % 60); // Varies between 60-120 degrees
+                    const r_sector = Math.sqrt(T / ((theta/360) * PI));
+                    return { var: 'r', value: r_sector.toFixed(2), var2: 'θ', value2: theta.toString(), graphic: 'sector' };
+                
+                case 'golden':
+                    return { var: 'n', value: (T / (PHI * PI)).toFixed(2) };
+                
+                case 'trig_pi':
+                    // Vary angle based on time
+                    const angle1 = 15 + (T % 60);
+                    const n_trig = T / (Math.sin(angle1 * PI / 180) * PI);
+                    return { var: 'n', value: n_trig.toFixed(2), var2: 'θ', value2: angle1.toString() };
+                
+                case 'cos_pi':
+                    const angle2 = 20 + (T % 50);
+                    const n_cos = T / (Math.cos(angle2 * PI / 180) * PI);
+                    return { var: 'n', value: n_cos.toFixed(2), var2: 'θ', value2: angle2.toString() };
+                
+                case 'tan_e':
+                    const angle3 = 25 + (T % 40);
+                    const n_tan = T / (Math.tan(angle3 * PI / 180) * E);
+                    return { var: 'n', value: n_tan.toFixed(2), var2: 'θ', value2: angle3.toString() };
+                
+                case 'inscribed':
+                    // Equilateral triangle with inscribed circle
+                    // r = a/(2√3), so a = 2√3 * r
+                    const r_insc = T / PI;
+                    const a = 2 * Math.sqrt(3) * r_insc;
+                    return { var: 'a', value: a.toFixed(2), graphic: 'inscribed' };
+                
+                case 'sphere':
+                    return { var: 'r', value: Math.cbrt((3 * T) / (4 * PI)).toFixed(2), graphic: 'sphere' };
+                
+                case 'complex_trig':
+                    const angle4 = 35 + (T % 35);
+                    return { var: 'θ', value: angle4.toString() };
+                
+                case 'nested':
+                    const n_nested = T * T / (PI * PI * E);
+                    return { var: 'n', value: n_nested.toFixed(2) };
+                
+                case 'inscribed_complex':
+                    // Triangle with two sides and angle
+                    const side1 = 10 + (T % 20);
+                    const side2 = 12 + (T % 18);
+                    const angle5 = 40 + (T % 40);
+                    return { 
+                        var: 'a', value: side1.toString(),
+                        var2: 'b', value2: side2.toString(),
+                        var3: 'α', value3: angle5.toString() + '°',
+                        graphic: 'inscribed_complex'
+                    };
+                
+                case 'cone':
+                    // Assume h = 2r for simplicity
+                    const r_cone = Math.cbrt((3 * T) / (2 * PI));
+                    const h_cone = 2 * r_cone;
+                    return { var: 'r', value: r_cone.toFixed(2), var2: 'h', value2: h_cone.toFixed(2) };
+                
+                case 'logarithm':
+                    const ln_val = Math.log(PI * E * E);
+                    return { var: 'n', value: (T / ln_val).toFixed(2) };
+                
+                default:
+                    return { var: 'n', value: (T / PI).toFixed(2) };
+            }
+        }
+
+        // Generate SVG graphic
+        function generateGraphic(type, vars, difficulty) {
+            const size = 300;
+            const center = size / 2;
+            
+            if (type === 'circle') {
+                const r = parseFloat(vars.value);
+                const scale = Math.min(120, size / (2 * r + 40));
+                const displayR = r * scale;
+                
+                return `
+                    <svg width="${size}" height="${size}" class="${difficulty}">
+                        <circle cx="${center}" cy="${center}" r="${displayR}" 
+                            fill="none" stroke="#1a1a1a" stroke-width="3"/>
+                        <line x1="${center}" y1="${center}" x2="${center + displayR}" y2="${center}"
+                            stroke="#4a4a4a" stroke-width="2" stroke-dasharray="5,5"/>
+                        <text x="${center + displayR/2}" y="${center - 15}" 
+                            fill="#1a1a1a" font-size="24" font-weight="500" text-anchor="middle">${vars.var} = ${vars.value}</text>
+                    </svg>
+                `;
             }
             
-            document.getElementById('pi-grid').innerHTML = html;
+            if (type === 'sector') {
+                const r = parseFloat(vars.value);
+                const theta = parseFloat(vars.value2);
+                const scale = Math.min(100, size / (2 * r + 60));
+                const displayR = r * scale;
+                const endAngle = (90 - theta) * Math.PI / 180;
+                const endX = center + displayR * Math.cos(endAngle);
+                const endY = center - displayR * Math.sin(endAngle);
+                const largeArc = theta > 180 ? 1 : 0;
+                
+                return `
+                    <svg width="${size}" height="${size}" class="${difficulty}">
+                        <path d="M ${center},${center} L ${center + displayR},${center} A ${displayR},${displayR} 0 ${largeArc},0 ${endX},${endY} Z"
+                            fill="rgba(26,26,26,0.08)" stroke="#1a1a1a" stroke-width="3"/>
+                        <line x1="${center}" y1="${center}" x2="${center + displayR}" y2="${center}"
+                            stroke="#4a4a4a" stroke-width="2"/>
+                        <line x1="${center}" y1="${center}" x2="${endX}" y2="${endY}"
+                            stroke="#4a4a4a" stroke-width="2"/>
+                        <text x="${center}" y="${center + displayR + 35}" 
+                            fill="#1a1a1a" font-size="20" font-weight="500" text-anchor="middle">r = ${vars.value}, θ = ${vars.value2}°</text>
+                    </svg>
+                `;
+            }
+            
+            if (type === 'inscribed') {
+                const a = parseFloat(vars.value);
+                const scale = Math.min(180, size / (a + 60));
+                const displayA = a * scale;
+                const h = displayA * Math.sqrt(3) / 2;
+                const r = displayA / (2 * Math.sqrt(3));
+                
+                return `
+                    <svg width="${size}" height="${size}" class="${difficulty}">
+                        <polygon points="${center},${center - 2*h/3} ${center - displayA/2},${center + h/3} ${center + displayA/2},${center + h/3}"
+                            fill="none" stroke="#1a1a1a" stroke-width="3"/>
+                        <circle cx="${center}" cy="${center}" r="${r}"
+                            fill="rgba(26,26,26,0.05)" stroke="#4a4a4a" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="${center - displayA/2}" y1="${center + h/3}" x2="${center + displayA/2}" y2="${center + h/3}"
+                            stroke="#666" stroke-width="1"/>
+                        <text x="${center}" y="${center + h/3 + 35}" 
+                            fill="#1a1a1a" font-size="20" font-weight="500" text-anchor="middle">a = ${vars.value}</text>
+                    </svg>
+                `;
+            }
+            
+            if (type === 'inscribed_complex') {
+                // Complex triangle with two sides and angle
+                const a = parseFloat(vars.value);
+                const b = parseFloat(vars.value2);
+                const angle = parseFloat(vars.value3);
+                const scale = Math.min(150, size / Math.max(a, b, 50));
+                
+                const p1 = { x: center - a*scale/2, y: center + 50 };
+                const p2 = { x: center + a*scale/2, y: center + 50 };
+                const angleRad = angle * Math.PI / 180;
+                const p3 = {
+                    x: p1.x + b*scale * Math.cos(angleRad),
+                    y: p1.y - b*scale * Math.sin(angleRad)
+                };
+                
+                return `
+                    <svg width="${size}" height="${size}" class="${difficulty}">
+                        <defs>
+                            <filter id="shadow-expert">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                                <feOffset dx="4" dy="4" result="offsetblur"/>
+                                <feComponentTransfer>
+                                    <feFuncA type="linear" slope="0.4"/>
+                                </feComponentTransfer>
+                                <feMerge>
+                                    <feMergeNode/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}"
+                            fill="none" stroke="#1a1a1a" stroke-width="3" filter="url(#shadow-expert)"/>
+                        <text x="${(p1.x + p2.x)/2}" y="${p1.y + 25}" 
+                            fill="#1a1a1a" font-size="18" font-weight="500" text-anchor="middle">a = ${vars.value}</text>
+                        <text x="${(p1.x + p3.x)/2 - 20}" y="${(p1.y + p3.y)/2}" 
+                            fill="#1a1a1a" font-size="18" font-weight="500">b = ${vars.value2}</text>
+                        <text x="${p1.x + 30}" y="${p1.y - 10}" 
+                            fill="#1a1a1a" font-size="18" font-weight="500">α = ${vars.value3}</text>
+                    </svg>
+                `;
+            }
+            
+            if (type === 'sphere') {
+                const r = parseFloat(vars.value);
+                const scale = Math.min(120, size / (2 * r + 40));
+                const displayR = r * scale;
+                
+                return `
+                    <svg width="${size}" height="${size}" class="${difficulty}">
+                        <defs>
+                            <radialGradient id="sphereGrad">
+                                <stop offset="0%" style="stop-color:#f0f0f0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:0.1" />
+                            </radialGradient>
+                        </defs>
+                        <circle cx="${center}" cy="${center}" r="${displayR}" 
+                            fill="url(#sphereGrad)" stroke="#1a1a1a" stroke-width="3"/>
+                        <ellipse cx="${center}" cy="${center}" rx="${displayR}" ry="${displayR * 0.3}"
+                            fill="none" stroke="#4a4a4a" stroke-width="1.5" stroke-dasharray="5,5"/>
+                        <text x="${center}" y="${center + displayR + 30}" 
+                            fill="#1a1a1a" font-size="22" font-weight="500" text-anchor="middle">r = ${vars.value}</text>
+                    </svg>
+                `;
+            }
+            
+            return '';
         }
 
-        // Initialize and update
-        function init() {
-            updatePadding();
-            updateBackground();
-            generatePiDisplay();
+        // Display formula
+        function displayFormula() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = hours + minutes;
+            const minuteNum = parseInt(minutes);
+            
+            const difficulty = getDifficulty(minuteNum);
+            const formulaObj = pickFormula(minuteNum, difficulty);
+            const vars = solveForVariable(timeStr, formulaObj);
+            
+            // Display formula
+            const formulaEl = document.getElementById('formula');
+            formulaEl.textContent = formulaObj.formula;
+            formulaEl.className = `formula ${difficulty}`;
+            
+            // Display variable
+            const variableEl = document.getElementById('variable');
+            let varText = `${vars.var} = ${vars.value}`;
+            if (vars.var2) {
+                varText += `,  ${vars.var2} = ${vars.value2}`;
+            }
+            if (vars.var3) {
+                varText += `,  ${vars.var3} = ${vars.value3}`;
+            }
+            variableEl.textContent = varText;
+            
+            // Display graphic
+            const graphicEl = document.getElementById('graphic');
+            if (vars.graphic) {
+                graphicEl.innerHTML = generateGraphic(vars.graphic, vars, difficulty);
+            } else {
+                graphicEl.innerHTML = '';
+            }
+            
+            // Setup hint
+            const hintPanel = document.getElementById('hint-panel');
+            hintPanel.textContent = formulaObj.hint;
         }
 
-        // Update every second
-        init();
-        setInterval(() => {
-            updateBackground();
-            generatePiDisplay();
-        }, 1000);
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            updatePadding();
-            updateBackground();
+        // Toggle hint
+        document.getElementById('hint-button').addEventListener('click', function() {
+            const panel = document.getElementById('hint-panel');
+            panel.classList.toggle('visible');
         });
+
+        // Show screenshot button when typing
+        const workingInput = document.getElementById('working-input');
+        const screenshotButton = document.getElementById('screenshot-button');
+        
+        workingInput.addEventListener('input', function() {
+            if (this.value.trim().length > 0) {
+                screenshotButton.classList.add('visible');
+            } else {
+                screenshotButton.classList.remove('visible');
+            }
+        });
+
+        // Screenshot functionality
+        screenshotButton.addEventListener('click', async function() {
+            // Modern way: use native share or download
+            try {
+                const canvas = await html2canvas(document.querySelector('.container'));
+                canvas.toBlob(function(blob) {
+                    if (navigator.share) {
+                        const file = new File([blob], 'pi-puzzle.png', { type: 'image/png' });
+                        navigator.share({
+                            files: [file],
+                            title: 'Pi Puzzle Solution',
+                            text: 'Check out my solution!'
+                        });
+                    } else {
+                        // Download fallback
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'pi-puzzle.png';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                });
+            } catch (e) {
+                alert('Screenshot feature requires html2canvas library. Use browser screenshot instead!');
+            }
+        });
+
+        // Initialize
+        displayFormula();
+        
+        // Update every minute
+        setInterval(displayFormula, 60000);
     </script>
 </body>
 </html>
