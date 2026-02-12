@@ -46,6 +46,49 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+        }
+
+        .fact-text-inner {
+            pointer-events: none;
+        }
+
+        /* Parallelogram MORE INFO button - skewed to match oblique angle */
+        .more-info-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.18em 0.9em;
+            background: #000;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 6px;
+            font-weight: 800;
+            font-style: oblique;
+            font-size: 0.55em;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            cursor: pointer;
+            pointer-events: all;
+            /* Skew matches oblique slant (~10 degrees) */
+            transform: skewX(-10deg);
+            white-space: nowrap;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .more-info-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Counter-skew the text inside so it reads straight */
+        .more-info-btn span {
+            display: inline-block;
+            transform: skewX(10deg);
         }
 
         /* Pi Day overlay */
@@ -322,21 +365,43 @@
         const color = FACT_COLORS[hours % 24];
         const { vh, horizonY, vw } = getLayout();
 
-        // Text sits at same distance from bottom as horizon from top
         const textBottom = horizonY;
         const fontSize   = Math.max(14, vh * 0.028 * 1.5);
 
-        // Build or recycle element
         const layer = document.getElementById('fact-layer');
         layer.innerHTML = '';
 
-        const el = document.createElement('span');
+        // Outer scrolling container - flex row with text + button
+        const el = document.createElement('div');
         el.className = 'fact-line';
         el.style.fontSize   = fontSize + 'px';
         el.style.color      = color;
         el.style.bottom     = textBottom + 'px';
         el.style.lineHeight = '1';
-        el.textContent = `${hh}:${mm}          FACT #${factIndex}:  ${fact.toUpperCase()}               `;
+
+        // Text portion
+        const textSpan = document.createElement('span');
+        textSpan.className = 'fact-text-inner';
+        textSpan.textContent = `${hh}:${mm}          FACT #${factIndex}:  ${fact.toUpperCase()}     `;
+        el.appendChild(textSpan);
+
+        // MORE INFO button — opens Google search of the fact
+        const btn = document.createElement('a');
+        btn.className = 'more-info-btn';
+        btn.href = `https://www.google.com/search?q=${encodeURIComponent(fact)}`;
+        btn.target = '_blank';
+        btn.rel = 'noopener noreferrer';
+        const btnLabel = document.createElement('span');
+        btnLabel.textContent = 'MORE INFO';
+        btn.appendChild(btnLabel);
+        el.appendChild(btn);
+
+        // Trailing space after button
+        const trail = document.createElement('span');
+        trail.className = 'fact-text-inner';
+        trail.textContent = '               ';
+        el.appendChild(trail);
+
         layer.appendChild(el);
 
         if (scrollAnimation) {
@@ -345,7 +410,7 @@
         }
 
         requestAnimationFrame(() => {
-            const tw  = el.offsetWidth;
+            const tw      = el.offsetWidth;
             const startX  = vw;
             const endX    = -tw;
             const dist    = startX - endX;
