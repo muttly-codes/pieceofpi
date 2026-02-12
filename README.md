@@ -1,7 +1,2 @@
 # pieceofpi
-You already have the answer - it's the same, day in and day out.
-So...
-
-Watch π 
-
-"It's all ON the wrist"
+The space to find a new Piece of Pi every minute of the day...
