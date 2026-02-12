@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piece of Pi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,12 +11,10 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: #f5f5f5;
-            font-family: 'Roboto Mono', monospace;
         }
 
         .container {
@@ -26,429 +23,399 @@
             position: relative;
         }
 
-        svg {
+        svg#bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
 
-        /* Ticker container - 16% height, sits 42% from top */
-        .ticker-container {
+        svg#clock-svg {
             position: absolute;
-            top: 42%;
-            left: 0;
-            width: 100%;
-            height: 16%;
-            overflow: hidden;
-            z-index: 10;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
         }
 
-        /* Cylindrical bars - FIX: 3x thicker = 9% each */
-        .ticker-bar-top {
+        /* Scrolling fact text */
+        .fact-line {
             position: absolute;
-            top: 0;
-            width: 100%;
-            height: 9%;
-            background: linear-gradient(to bottom,
-                #f0f0f0 0%,
-                #e0e0e0 10%,
-                #aaa 30%,
-                #666 50%,
-                #aaa 70%,
-                #e0e0e0 90%,
-                #f0f0f0 100%
-            );
-        }
-
-        .ticker-bar-bottom {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 9%;
-            background: linear-gradient(to bottom,
-                #f0f0f0 0%,
-                #e0e0e0 10%,
-                #aaa 30%,
-                #666 50%,
-                #aaa 70%,
-                #e0e0e0 90%,
-                #f0f0f0 100%
-            );
-        }
-
-        /* Text area between bars */
-        .ticker-text {
-            position: absolute;
-            top: 9%;
-            width: 100%;
-            height: 82%;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* FIX: 2x font size (was 4vh, now 8vh)
-           FIX: scroll speed 3x slower (was 20s, now 60s)
-           FIX: single pass - start at 100vw, end at -100% of text width
-           We use JS-driven animation so the text completes exactly once per cycle */
-        .fact-scroll {
-            display: inline-block;
             white-space: nowrap;
-            font-size: 8vh;
-            font-weight: 700;
+            font-family: 'Avenir Next', 'Avenir', 'Century Gothic', sans-serif;
+            font-weight: 800;
+            font-style: oblique;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+        }
+
+        /* Pi Day overlay */
+        #piday-overlay {
             position: absolute;
-            left: 0;
-            text-shadow: 
-                2px 2px 6px rgba(0, 0, 0, 0.6),
-                0px 0px 12px rgba(0, 0, 0, 0.3);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 20;
+            pointer-events: none;
+            display: none;
+        }
+
+        #bouncing-pi {
+            position: absolute;
+            font-family: Georgia, serif;
+            font-weight: bold;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <svg id="main-svg" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <!-- FIX: Top = darkest, Bottom = lightest, Left/Right = mid -->
-                <linearGradient id="grad-top" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#333;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#555;stop-opacity:1" />
-                </linearGradient>
-                <linearGradient id="grad-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#d5d5d5;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
-                </linearGradient>
-                <linearGradient id="grad-left" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:#777;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#aaa;stop-opacity:1" />
-                </linearGradient>
-                <linearGradient id="grad-right" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:#aaa;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#777;stop-opacity:1" />
-                </linearGradient>
-            </defs>
+<div class="container" id="container">
 
-            <g id="box"></g>
-            <g id="pie"></g>
-            <g id="pi-symbol"></g>
-        </svg>
+    <!-- Background: two-zone mathematical horizon -->
+    <svg id="bg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Top zone gradient (1 unit tall) - dark top, white at horizon -->
+            <linearGradient id="grad-sky" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                <stop offset="0%"   stop-color="#2a2a2a"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+            </linearGradient>
+            <!-- Bottom zone gradient (π units tall) - white at horizon, dark bottom -->
+            <linearGradient id="grad-ground" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                <stop offset="0%"   stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#2a2a2a"/>
+            </linearGradient>
+        </defs>
+        <rect id="sky-rect"    x="0" y="0" width="100%" height="50%" fill="url(#grad-sky)"/>
+        <rect id="ground-rect" x="0" y="50%" width="100%" height="50%" fill="url(#grad-ground)"/>
+    </svg>
 
-        <div class="ticker-container">
-            <div class="ticker-bar-top"></div>
-            <div class="ticker-text">
-                <span class="fact-scroll" id="fact-text"></span>
-            </div>
-            <div class="ticker-bar-bottom"></div>
-        </div>
+    <!-- Clock SVG -->
+    <svg id="clock-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="clock-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="28" result="blur"/>
+                <feComponentTransfer in="blur" result="shadow">
+                    <feFuncA type="linear" slope="0.6"/>
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode in="shadow"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <g id="pie"></g>
+    </svg>
+
+    <!-- Fact text layer -->
+    <div id="fact-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;"></div>
+
+    <!-- Pi Day easter egg -->
+    <div id="piday-overlay">
+        <span id="bouncing-pi">π</span>
     </div>
 
-    <script>
-        // FIX: Fact number = total minutes since midnight (0-1439)
-        // 00:00 = fact 0, 01:00 = fact 60, 01:01 = fact 61, 23:59 = fact 1439
-        const PI_FACTS = [
-            // 00:xx - Fact 0-59
-            "Pi is the ratio of a circle's circumference to its diameter.",
-            "The symbol π was first used by William Jones in 1706.",
-            "Pi is an irrational number — it never repeats or terminates.",
-            "Archimedes calculated pi to be between 3.1408 and 3.1429.",
-            "Pi is transcendental — it cannot be the root of any polynomial equation.",
-            "The first million digits of pi were calculated by 1973.",
-            "Pi Day is celebrated on March 14th (3/14) every year.",
-            "The value of pi to 39 decimal places is enough to calculate the circumference of the universe to within the width of a hydrogen atom.",
-            "Zu Chongzhi calculated pi to 7 decimal places in the 5th century — a record that stood for 900 years.",
-            "The word 'pi' comes from the Greek letter π, the first letter of the Greek word 'perimetros'.",
-            "Pi appears in the formula for a normal distribution in statistics.",
-            "Albert Einstein was born on Pi Day — March 14, 1879.",
-            "Pi has been calculated to over 100 trillion decimal places.",
-            "The first recorded use of a symbol for pi was by William Oughtred in 1647.",
-            "Pi is used in navigation, engineering, physics, and virtually every branch of science.",
-            "The probability that two randomly chosen integers are coprime is 6/π².",
-            "Ludolph van Ceulen spent much of his life calculating pi to 35 digits — these digits were engraved on his tombstone.",
-            "Pi appears in Euler's famous identity: e^(iπ) + 1 = 0.",
-            "The digits of pi pass all known tests for statistical randomness.",
-            "Ramanujan discovered remarkable formulas for pi in the early 20th century, some still used today.",
-            // 00:20 - Fact 20-39
-            "Pi is used in Fourier transforms, which underpin digital audio and image compression.",
-            "The Great Pyramid of Giza has a perimeter-to-height ratio close to 2π.",
-            "Pi appears in Heisenberg's uncertainty principle in quantum mechanics.",
-            "The first computer calculation of pi was performed in 1949 using ENIAC — 2,037 digits in 70 hours.",
-            "Pi is intimately connected to the geometry of circles, spheres, and all curved surfaces.",
-            "The Chudnovsky brothers calculated 4 billion digits of pi on a homemade supercomputer in 1994.",
-            "Pi is used to calculate the orbital periods of planets.",
-            "There are no repeating patterns known in the digits of pi.",
-            "Pi is hidden in the formula for Coulomb's Law, which describes the force between electric charges.",
-            "The number 3.14159... was known as 'the constant of the circle' for centuries.",
-            // 00:30
-            "Pi appears in the formula for gravitational waves detected by LIGO.",
-            "Memorizing pi digits is a competitive sport — the world record is over 70,000 digits.",
-            "The Basel problem, solved by Euler in 1734, showed that 1 + 1/4 + 1/9 + ... = π²/6.",
-            "Pi appears in the formula for the area of an ellipse: A = πab.",
-            "The circumference of the Earth is approximately 2π × 6,371 km.",
-            "Pi is used in signal processing to describe sine and cosine waves.",
-            "The Leibniz formula for pi: π/4 = 1 - 1/3 + 1/5 - 1/7 + ... converges very slowly.",
-            "Pi appears in Einstein's field equations of general relativity.",
-            "The Indian mathematician Madhava calculated pi to 11 decimal places around 1400 AD.",
-            "Pi is used in GPS calculations to determine positions on the curved surface of the Earth.",
-            // 00:40
-            "There are no occurrences of the sequence 123456 in the first million digits of pi.",
-            "The Gaussian integral, used in probability, equals √π.",
-            "Pi was first called 'π' because it is the first letter of 'periphery' and 'perimeter'.",
-            "A rational approximation of pi, 355/113, is accurate to 6 decimal places.",
-            "Pi shows up in the solution to the Buffon's needle problem in probability theory.",
-            "The area of a circle of radius 1 is exactly π.",
-            "Pi appears in the formula for the volume of a torus.",
-            "Supercomputers have been used to calculate pi as a test of computing power and accuracy.",
-            "The sequence 0123456789 first appears at position 17,387,594,880 in the digits of pi.",
-            "Pi is used in antenna design, acoustic engineering, and electromagnetic theory.",
-            // 00:50
-            "The ratio of pi to e (Euler's number) is approximately 1.1557.",
-            "Pi appears in the formula relating a pendulum's length to its period of oscillation.",
-            "The Machin formula, discovered in 1706, was used to compute pi for centuries.",
-            "Pi is used in the mathematical description of all circular and rotational motion.",
-            "The digit sequence 999999 appears at position 762 in pi — known as the Feynman Point.",
-            "Pi appears in Stirling's approximation for factorials.",
-            "The 100th digit of pi is 9.",
-            "Pi shows up in the formula for the surface area of a sphere: 4πr².",
-            "Napoleon is rumored to have been interested in pi — though historians debate this.",
-            "There are more digits of pi than there are atoms in the observable universe.",
-            // 01:00 (fact 60)
-            "Pi cannot be expressed as a fraction of two integers — this was proved by Lambert in 1761.",
-            "The first 144 digits of pi add up to 666 — a fun coincidence for mathematicians.",
-            "Pi appears in the Wallis product: π/2 = (2/1)(2/3)(4/3)(4/5)(6/5)(6/7)...",
-            "The Egyptians approximated pi as (16/9)² ≈ 3.16 around 1650 BC.",
-            "Pi shows up in the formula for black hole entropy in Hawking's thermodynamics.",
-            "The digits of pi contain every possible finite number sequence — theoretically.",
-            "Pi is used to calculate the resonant frequencies of musical instruments.",
-            "Archimedes was the first to rigorously approximate pi using a 96-sided polygon.",
-            "Pi appears in the formula for the deflection of starlight around massive objects.",
-            "The number of seconds in a year is approximately π × 10^7.",
-            // Add more facts as index grows - for now cycle through with fallback
-        ];
+</div>
+<script>
+    // ─── Constants ───────────────────────────────────────────────
+    const PI     = Math.PI;
+    const RATIO  = PI;          // bottom zone is π × top zone
+    const TOTAL  = 1 + RATIO;   // 4.14159...
+    const SKY_FRAC    = 1 / TOTAL;      // ~0.2416  (top zone fraction)
+    const GROUND_FRAC = RATIO / TOTAL;  // ~0.7584  (bottom zone fraction)
 
-        // Pad array to 1440 by cycling through available facts - no markers
-        while (PI_FACTS.length < 1440) {
-            PI_FACTS.push(PI_FACTS[PI_FACTS.length % 70]);
+    // ─── Facts ───────────────────────────────────────────────────
+    const PI_FACTS_RAW = [
+        "Pi is the ratio of a circle's circumference to its diameter.",
+        "The symbol π was first used by William Jones in 1706.",
+        "Pi is an irrational number — it never repeats or terminates.",
+        "Archimedes calculated pi to be between 3.1408 and 3.1429.",
+        "Pi is transcendental — it cannot be the root of any polynomial equation.",
+        "The first million digits of pi were calculated by 1973.",
+        "Pi Day is celebrated on March 14th (3/14) every year.",
+        "Pi to 39 decimal places can calculate the universe's circumference to within a hydrogen atom's width.",
+        "Zu Chongzhi calculated pi to 7 decimal places in the 5th century — a record that stood for 900 years.",
+        "The word pi comes from the Greek letter π, first letter of the word perimetros.",
+        "Pi appears in the formula for a normal distribution in statistics.",
+        "Albert Einstein was born on Pi Day — March 14, 1879.",
+        "Pi has been calculated to over 100 trillion decimal places.",
+        "The first recorded use of a symbol for pi was by William Oughtred in 1647.",
+        "Pi is used in navigation, engineering, physics, and virtually every branch of science.",
+        "The probability that two randomly chosen integers are coprime is 6 divided by pi squared.",
+        "Ludolph van Ceulen spent his life calculating pi to 35 digits — engraved on his tombstone.",
+        "Pi appears in Euler's famous identity: e to the power of i-pi plus 1 equals 0.",
+        "The digits of pi pass all known tests for statistical randomness.",
+        "Ramanujan discovered remarkable formulas for pi in the early 20th century, some still used today.",
+        "Pi is used in Fourier transforms, which underpin digital audio and image compression.",
+        "The Great Pyramid of Giza has a perimeter-to-height ratio close to 2π.",
+        "Pi appears in Heisenberg's uncertainty principle in quantum mechanics.",
+        "The first computer calculation of pi was performed in 1949 using ENIAC — 2037 digits in 70 hours.",
+        "Pi is intimately connected to the geometry of circles, spheres, and all curved surfaces.",
+        "The Chudnovsky brothers calculated 4 billion digits of pi on a homemade supercomputer in 1994.",
+        "Pi is used to calculate the orbital periods of planets.",
+        "There are no repeating patterns known in the digits of pi.",
+        "Pi is hidden in the formula for Coulomb's Law, describing the force between electric charges.",
+        "The number 3.14159 was known as the constant of the circle for centuries.",
+        "Pi appears in the formula for gravitational waves detected by LIGO.",
+        "Memorising pi digits is a competitive sport — the world record exceeds 70,000 digits.",
+        "The Basel problem solved by Euler in 1734 showed 1 plus 1/4 plus 1/9 plus ... equals pi squared over 6.",
+        "Pi appears in the formula for the area of an ellipse.",
+        "The circumference of the Earth is approximately 2π times 6371 kilometres.",
+        "Pi is used in signal processing to describe sine and cosine waves.",
+        "The Leibniz formula for pi converges so slowly it is nearly useless for computation.",
+        "Pi appears in Einstein's field equations of general relativity.",
+        "The Indian mathematician Madhava calculated pi to 11 decimal places around 1400 AD.",
+        "Pi is used in GPS calculations to find positions on the curved surface of the Earth.",
+        "There are no occurrences of 123456 in the first million digits of pi.",
+        "The Gaussian integral, fundamental to probability, equals the square root of pi.",
+        "Pi was first called π because it is the first letter of periphery and perimeter.",
+        "A rational approximation of pi, 355 over 113, is accurate to 6 decimal places.",
+        "Pi shows up in the solution to Buffon's needle problem in probability theory.",
+        "The area of a circle of radius 1 is exactly pi.",
+        "Pi appears in the formula for the volume of a torus.",
+        "Supercomputers have used pi calculation as a benchmark test of accuracy and speed.",
+        "The sequence 0123456789 first appears at position 17 billion in the digits of pi.",
+        "Pi is used in antenna design, acoustic engineering, and electromagnetic theory.",
+        "The ratio of pi to Euler's number is approximately 1.1557.",
+        "Pi appears in the formula relating a pendulum's length to its period of oscillation.",
+        "The Machin formula discovered in 1706 was used to compute pi for centuries.",
+        "Pi is used in the mathematical description of all circular and rotational motion.",
+        "The digit sequence 999999 appears at position 762 in pi — known as the Feynman Point.",
+        "Pi appears in Stirling's approximation for factorials.",
+        "The 100th digit of pi is 9.",
+        "Pi shows up in the formula for the surface area of a sphere: 4 pi r squared.",
+        "Napoleon is rumoured to have been interested in pi — though historians debate this.",
+        "There are more digits of pi than there are atoms in the observable universe.",
+        "Pi cannot be expressed as a fraction — proved by Lambert in 1761.",
+        "The first 144 digits of pi add up to 666.",
+        "Pi appears in the Wallis product, an infinite series of fractions converging to pi over 2.",
+        "The Egyptians approximated pi as 256 over 81, roughly 3.16, around 1650 BC.",
+        "Pi shows up in the formula for black hole entropy in Hawking's thermodynamics.",
+        "The digits of pi contain every possible finite number sequence — at least in theory.",
+        "Pi is used to calculate the resonant frequencies of musical instruments.",
+        "Archimedes was the first to rigorously approximate pi using a 96-sided polygon.",
+        "The number of seconds in a year is approximately pi times ten to the power of seven.",
+        "Pi appears in the formula for the deflection of starlight around massive objects.",
+        "Pi is connected to the Riemann zeta function at even positive integers.",
+        "The Monte Carlo method can estimate pi using random points in a square and circle.",
+    ];
+
+    // Pad to 1440
+    const PI_FACTS = [];
+    while (PI_FACTS.length < 1440) {
+        PI_FACTS.push(PI_FACTS_RAW[PI_FACTS.length % PI_FACTS_RAW.length]);
+    }
+
+    // Tonal greys only — 24 distinct shades cycling through hours
+    const FACT_COLORS = [
+        '#1a1a1a','#222','#2a2a2a','#333',
+        '#3a3a3a','#444','#4a4a4a','#555',
+        '#5a5a5a','#666','#6a6a6a','#777',
+        '#888','#999','#aaa','#bbb',
+        '#999','#888','#777','#666',
+        '#555','#444','#333','#222',
+    ];
+
+    // ─── Layout ──────────────────────────────────────────────────
+    function getLayout() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const horizonY = vh * SKY_FRAC;         // ~24% from top
+        const isPortrait = vh > vw;
+        const backW = vw * 0.5;
+        const backH = vh * 0.5;
+        const diam = isPortrait ? backH * 1.1 : backW * 1.1;
+        return {
+            vw, vh,
+            horizonY,
+            cx: vw / 2,
+            cy: vh / 2,
+            radius: diam / 2,
+            // Text sits same distance from bottom as horizon from top
+            textY: vh - horizonY,
+        };
+    }
+
+    // ─── Background ──────────────────────────────────────────────
+    function drawBackground() {
+        const { vh, horizonY } = getLayout();
+        document.getElementById('sky-rect').setAttribute('height', horizonY);
+        document.getElementById('ground-rect').setAttribute('y', horizonY);
+        document.getElementById('ground-rect').setAttribute('height', vh - horizonY);
+    }
+
+    // ─── Clock ───────────────────────────────────────────────────
+    function drawClock() {
+        const { cx, cy, radius } = getLayout();
+        const now      = new Date();
+        const hours    = now.getHours();
+        const minutes  = now.getMinutes();
+
+        const totalMins = ((hours % 12) * 60) + minutes;
+        const angle     = (totalMins / 720) * 360;
+        const isAM      = hours < 12;
+
+        const bgColor    = isAM ? '#111' : '#efefef';
+        const sliceColor = isAM ? '#efefef' : '#111';
+        const tickColor  = isAM ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)';
+
+        const pie = document.getElementById('pie');
+        pie.innerHTML = '';
+
+        // Plain group — no filter, no shadow
+        const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+
+        // Base circle
+        const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        bg.setAttribute('cx', cx);
+        bg.setAttribute('cy', cy);
+        bg.setAttribute('r',  radius);
+        bg.setAttribute('fill', bgColor);
+        g.appendChild(bg);
+
+        // Pie slice
+        if (angle > 0 && angle < 360) {
+            const sRad = -PI / 2;
+            const eRad = sRad + (angle * PI / 180);
+            const x1 = cx + radius * Math.cos(sRad);
+            const y1 = cy + radius * Math.sin(sRad);
+            const x2 = cx + radius * Math.cos(eRad);
+            const y2 = cy + radius * Math.sin(eRad);
+            const la = angle > 180 ? 1 : 0;
+
+            const sl = document.createElementNS('http://www.w3.org/2000/svg','path');
+            sl.setAttribute('d', `M ${cx},${cy} L ${x1},${y1} A ${radius},${radius} 0 ${la},1 ${x2},${y2} Z`);
+            sl.setAttribute('fill', sliceColor);
+            g.appendChild(sl);
         }
 
-        // Color palette for facts (24 colors, one per hour)
-        const FACT_COLORS = [
-            '#4A90E2', '#7B68EE', '#50C878', '#FF6B6B',
-            '#4ECDC4', '#F5A623', '#E67E22', '#E74C3C',
-            '#9B59B6', '#1ABC9C', '#3498DB', '#E91E63',
-            '#2ECC71', '#F39C12', '#D35400', '#8E44AD',
-            '#16A085', '#2980B9', '#C0392B', '#27AE60',
-            '#D98880', '#85C1E9', '#A9DFBF', '#F9E79F'
-        ];
+        pie.appendChild(g);
 
-        // Scroll animation state
-        let scrollAnimation = null;
+        // Hour ticks on top
+        for (let i = 0; i < 12; i++) {
+            const tRad   = (i / 12) * 2 * PI - PI / 2;
+            const outerR = radius * 0.92;
+            const innerR = radius * 0.78;
+            const tx1 = cx + outerR * Math.cos(tRad);
+            const ty1 = cy + outerR * Math.sin(tRad);
+            const tx2 = cx + innerR * Math.cos(tRad);
+            const ty2 = cy + innerR * Math.sin(tRad);
 
-        function drawPerspectiveBox() {
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
+            const tick = document.createElementNS('http://www.w3.org/2000/svg','line');
+            tick.setAttribute('x1', tx1); tick.setAttribute('y1', ty1);
+            tick.setAttribute('x2', tx2); tick.setAttribute('y2', ty2);
+            tick.setAttribute('stroke', tickColor);
+            tick.setAttribute('stroke-width', radius * 0.012);
+            tick.setAttribute('stroke-linecap', 'round');
+            pie.appendChild(tick);
+        }
+    }
 
-            const bx1 = vw * 0.25;
-            const by1 = vh * 0.25;
-            const bx2 = vw * 0.75;
-            const by2 = vh * 0.75;
+    // ─── Scrolling fact ──────────────────────────────────────────
+    let scrollAnimation = null;
 
-            const box = document.getElementById('box');
-            box.innerHTML = '';
+    function startScroll() {
+        const now     = new Date();
+        const hours   = now.getHours();
+        const minutes = now.getMinutes();
+        const hh = String(hours).padStart(2,'0');
+        const mm = String(minutes).padStart(2,'0');
+        const factIndex = hours * 60 + minutes;
+        const fact  = PI_FACTS[factIndex];
+        const color = FACT_COLORS[hours % 24];
+        const { vh, horizonY, vw } = getLayout();
 
-            // FIX: No stroke on trapezoids or back panel
-            const sides = [
-                // Top trapezoid - darkest
-                { points: `0,0 ${vw},0 ${bx2},${by1} ${bx1},${by1}`, fill: 'url(#grad-top)' },
-                // Bottom trapezoid - lightest
-                { points: `0,${vh} ${vw},${vh} ${bx2},${by2} ${bx1},${by2}`, fill: 'url(#grad-bottom)' },
-                // Left trapezoid - mid
-                { points: `0,0 ${bx1},${by1} ${bx1},${by2} 0,${vh}`, fill: 'url(#grad-left)' },
-                // Right trapezoid - mid
-                { points: `${vw},0 ${bx2},${by1} ${bx2},${by2} ${vw},${vh}`, fill: 'url(#grad-right)' },
-            ];
+        // Text sits at same distance from bottom as horizon from top
+        const textBottom = horizonY;
+        const fontSize   = Math.max(14, vh * 0.028 * 1.5);
 
-            sides.forEach(s => {
-                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                poly.setAttribute('points', s.points);
-                poly.setAttribute('fill', s.fill);
-                poly.setAttribute('stroke', 'none'); // FIX: no outline
-                box.appendChild(poly);
-            });
+        // Build or recycle element
+        const layer = document.getElementById('fact-layer');
+        layer.innerHTML = '';
 
-            // Back panel - no stroke
-            const back = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            back.setAttribute('x', bx1);
-            back.setAttribute('y', by1);
-            back.setAttribute('width', vw * 0.5);
-            back.setAttribute('height', vh * 0.5);
-            back.setAttribute('fill', '#c8c8c8');
-            back.setAttribute('stroke', 'none'); // FIX: no outline
-            box.appendChild(back);
+        const el = document.createElement('span');
+        el.className = 'fact-line';
+        el.style.fontSize   = fontSize + 'px';
+        el.style.color      = color;
+        el.style.bottom     = textBottom + 'px';
+        el.style.lineHeight = '1';
+        el.textContent = `${hh}:${mm}          FACT #${factIndex}:  ${fact.toUpperCase()}               `;
+        layer.appendChild(el);
+
+        if (scrollAnimation) {
+            cancelAnimationFrame(scrollAnimation);
+            scrollAnimation = null;
         }
 
-        function drawPiSymbol() {
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
+        requestAnimationFrame(() => {
+            const tw  = el.offsetWidth;
+            const startX  = vw;
+            const endX    = -tw;
+            const dist    = startX - endX;
+            const duration = 30000;
+            const t0 = performance.now();
 
-            const piGroup = document.getElementById('pi-symbol');
-            piGroup.innerHTML = '';
-
-            // Large π text centered on screen
-            // Size: 70% of viewport height so it dominates behind the ribbon
-            const fontSize = vh * 0.7 * 0.75;
-
-            const piText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            piText.setAttribute('x', vw / 2);
-            piText.setAttribute('y', (vh / 2) - (fontSize * 0.15));
-            piText.setAttribute('text-anchor', 'middle');
-            piText.setAttribute('dominant-baseline', 'central');
-            piText.setAttribute('font-family', 'Georgia, "Times New Roman", serif');
-            piText.setAttribute('font-size', fontSize);
-            piText.setAttribute('font-weight', 'bold');
-            piText.setAttribute('fill', '#555555');
-            piText.setAttribute('opacity', '0.40');
-            piText.textContent = 'π';
-
-            piGroup.appendChild(piText);
-        }
-
-        function drawPieClock() {
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            const isPortrait = vh > vw;
-
-            const backPanelWidth = vw * 0.5;
-            const backPanelHeight = vh * 0.5;
-
-            let circleDiameter = isPortrait ? backPanelHeight * 1.1 : backPanelWidth * 1.1;
-            const radius = circleDiameter / 2;
-            const cx = vw / 2;
-            const cy = vh / 2;
-
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-
-            const totalMinutes = ((hours % 12) * 60) + minutes;
-            const angle = (totalMinutes / 720) * 360;
-
-            const isAM = hours < 12;
-            const bgColor = isAM ? '#111111' : '#f5f5f5';
-            const sliceColor = isAM ? '#f5f5f5' : '#111111';
-
-            const pie = document.getElementById('pie');
-            pie.innerHTML = '';
-
-            // Background circle - no stroke
-            const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            bg.setAttribute('cx', cx);
-            bg.setAttribute('cy', cy);
-            bg.setAttribute('r', radius);
-            bg.setAttribute('fill', bgColor);
-            bg.setAttribute('stroke', 'none');
-            pie.appendChild(bg);
-
-            if (angle > 0 && angle < 360) {
-                const startRad = (-90 * Math.PI) / 180;
-                const endRad = ((-90 + angle) * Math.PI) / 180;
-
-                const x1 = cx + radius * Math.cos(startRad);
-                const y1 = cy + radius * Math.sin(startRad);
-                const x2 = cx + radius * Math.cos(endRad);
-                const y2 = cy + radius * Math.sin(endRad);
-                const largeArc = angle > 180 ? 1 : 0;
-
-                const slice = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                slice.setAttribute('d', `M ${cx},${cy} L ${x1},${y1} A ${radius},${radius} 0 ${largeArc},1 ${x2},${y2} Z`);
-                slice.setAttribute('fill', sliceColor);
-                pie.appendChild(slice);
-            }
-        }
-
-        function startScroll(text, color) {
-            const el = document.getElementById('fact-text');
-            const container = el.parentElement;
-
-            el.textContent = text;
-            el.style.color = color;
-
-            // Cancel any running animation
-            if (scrollAnimation) {
-                cancelAnimationFrame(scrollAnimation);
-                scrollAnimation = null;
-            }
-
-            // Wait for text to render, then measure and animate
-            requestAnimationFrame(() => {
-                const textWidth = el.offsetWidth;
-                const containerWidth = container.offsetWidth;
-
-                // Total travel = start at right edge to end fully off left edge
-                const startX = containerWidth;
-                const endX = -textWidth;
-                const totalDistance = startX - endX;
-
-                // FIX: 30 seconds for one complete pass (double speed)
-                const duration = 30000;
-                const startTime = performance.now();
-
-                function animate(now) {
-                    const elapsed = now - startTime;
-                    const progress = elapsed / duration;
-
-                    if (progress >= 1) {
-                        // One pass complete - restart with fresh fact check
-                        updateFact();
-                        return;
-                    }
-
-                    const x = startX - (progress * totalDistance);
-                    el.style.transform = `translateX(${x}px)`;
-                    scrollAnimation = requestAnimationFrame(animate);
-                }
-
+            function animate(now) {
+                const p = (now - t0) / duration;
+                if (p >= 1) { startScroll(); return; }
+                el.style.transform = `translateX(${startX - p * dist}px)`;
                 scrollAnimation = requestAnimationFrame(animate);
-            });
+            }
+            scrollAnimation = requestAnimationFrame(animate);
+        });
+    }
+
+    // ─── Pi Day easter egg ───────────────────────────────────────
+    let bouncingAnim = null;
+    let bounce = { x: 100, y: 100, vx: 4, vy: 3, ci: 0 };
+
+    function isPiMinute() {
+        const n = new Date();
+        return n.getMonth() === 2 && n.getDate() === 14 &&
+               n.getHours() % 12 === 3 && n.getMinutes() === 14;
+    }
+
+    function startEasterEgg() {
+        document.getElementById('piday-overlay').style.display = 'block';
+        document.getElementById('fact-layer').style.display = 'none';
+        if (scrollAnimation) { cancelAnimationFrame(scrollAnimation); scrollAnimation = null; }
+
+        const piEl = document.getElementById('bouncing-pi');
+        const sz   = window.innerHeight * 0.22;
+        piEl.style.fontSize = sz + 'px';
+        bounce.x = 80; bounce.y = 80;
+        bounce.vx = 4 + Math.random() * 2;
+        bounce.vy = 3 + Math.random() * 2;
+        let frame = 0;
+
+        function tick() {
+            const vw = window.innerWidth, vh = window.innerHeight;
+            bounce.x += bounce.vx; bounce.y += bounce.vy;
+            if (bounce.x <= 0 || bounce.x + sz >= vw) { bounce.vx *= -1; bounce.x = Math.max(0, Math.min(bounce.x, vw - sz)); }
+            if (bounce.y <= 0 || bounce.y + sz >= vh) { bounce.vy *= -1; bounce.y = Math.max(0, Math.min(bounce.y, vh - sz)); }
+            if (++frame % 30 === 0) bounce.ci = (bounce.ci + 1) % FACT_COLORS.length;
+            piEl.style.left  = bounce.x + 'px';
+            piEl.style.top   = bounce.y + 'px';
+            piEl.style.color = FACT_COLORS[bounce.ci];
+            bouncingAnim = requestAnimationFrame(tick);
         }
+        bouncingAnim = requestAnimationFrame(tick);
+    }
 
-        function updateFact() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const hh = String(hours).padStart(2, '0');
-            const mm = String(minutes).padStart(2, '0');
+    function stopEasterEgg() {
+        if (bouncingAnim) { cancelAnimationFrame(bouncingAnim); bouncingAnim = null; }
+        document.getElementById('piday-overlay').style.display = 'none';
+        document.getElementById('fact-layer').style.display = 'block';
+    }
 
-            // FIX: fact number = total minutes since midnight
-            const factIndex = hours * 60 + minutes; // 0-1439
-            const fact = PI_FACTS[factIndex] || "Pi has been calculated to over 100 trillion digits.";
+    // ─── Init & loops ────────────────────────────────────────────
+    function init() {
+        drawBackground();
+        drawClock();
+        if (isPiMinute()) { startEasterEgg(); }
+        else { stopEasterEgg(); startScroll(); }
+    }
 
-            // FIX: Color based on hour (24 hour palette)
-            const color = FACT_COLORS[hours % 24];
-
-            // FIX: More space between time and fact text
-            const factText = `${hh}:${mm}          FACT #${factIndex}:  ${fact.toUpperCase()}               `;
-
-            startScroll(factText, color);
-        }
-
-        function init() {
-            drawPerspectiveBox();
-            drawPiSymbol();
-            drawPieClock();
-            updateFact();
-        }
-
-        init();
-
-        // Update pie every second
-        setInterval(drawPieClock, 1000);
-
-        // Redraw box on resize
-        window.addEventListener('resize', init);
-    </script>
+    init();
+    setInterval(drawClock, 1000);
+    window.addEventListener('resize', init);
+</script>
 </body>
 </html>
