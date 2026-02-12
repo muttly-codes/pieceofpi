@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>π</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&family=Crimson+Text:wght@400;500&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap" rel="stylesheet">
+    <title>Piece of Pi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,620 +16,439 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
-            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            font-family: 'Roboto Mono', monospace;
         }
 
-        /* Main container */
         .container {
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Formula zone - 85% height */
-        .formula-zone {
-            width: 90%;
-            height: 85%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             position: relative;
-            border-bottom: 2px solid #333;
         }
 
-        /* Formula display */
-        .formula {
-            font-size: 8vw;
-            color: #1a1a1a;
-            text-align: center;
-            margin-bottom: 2rem;
-            user-select: none;
-        }
-
-        /* Difficulty-specific typography */
-        .formula.easy {
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            /* Flat 2D - no effects */
-        }
-
-        .formula.medium {
-            font-family: 'Crimson Text', serif;
-            font-weight: 400;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .formula.hard {
-            font-family: 'Lora', serif;
-            font-weight: 500;
-            /* Extruded effect - multiple shadows creating depth */
-            text-shadow: 
-                1px 0px 0 #4a4a4a,
-                0px 1px 0 #0a0a0a,
-                1px 1px 0 #2a2a2a,
-                2px 1px 0 #4a4a4a,
-                1px 2px 0 #0a0a0a,
-                2px 2px 0 #2a2a2a,
-                3px 2px 0 #4a4a4a,
-                2px 3px 0 #0a0a0a,
-                3px 3px 0 #2a2a2a,
-                4px 3px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .formula.expert {
-            font-family: 'Cormorant Garamond', serif;
-            font-weight: 700;
-            font-style: italic;
-            /* Monument effect - sculptural with ground shadow */
-            text-shadow:
-                1px 1px 0 #0a0a0a,
-                2px 2px 0 #1a1a1a,
-                3px 3px 0 #2a2a2a,
-                4px 4px 0 #3a3a3a,
-                5px 5px 0 #4a4a4a,
-                6px 6px 0 #5a5a5a,
-                0 10px 20px rgba(0, 0, 0, 0.4),
-                0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Graphics container */
-        .graphic {
-            margin-top: 2rem;
-        }
-
-        /* SVG styling */
         svg {
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
-        }
-
-        svg.medium {
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        }
-
-        svg.hard {
-            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-        }
-
-        svg.expert {
-            filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
-        }
-
-        /* Hint button */
-        .hint-button {
             position: absolute;
-            bottom: 2rem;
-            right: 2rem;
-            background: none;
-            border: 2px solid #333;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .hint-button:hover {
-            background: #333;
-            transform: scale(1.1);
-        }
-
-        /* Hint panel */
-        .hint-panel {
-            position: absolute;
-            bottom: 5rem;
-            right: 2rem;
-            background: white;
-            border: 2px solid #333;
-            padding: 2rem;
-            max-width: 400px;
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-            display: none;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        .hint-panel.visible {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Working area - 10% height */
-        .working-area {
-            width: 90%;
-            height: 10%;
-            margin: 0 auto;
-            padding: 1rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .working-input {
+            top: 0;
+            left: 0;
             width: 100%;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            padding: 0.5rem;
-            border: 1px solid #666;
-            background: white;
-            resize: none;
-            outline: none;
+            height: 100%;
         }
 
-        /* Screenshot button */
-        .screenshot-button {
-            align-self: center;
-            padding: 0.5rem 2rem;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            display: none;
-            transition: all 0.3s ease;
+        /* Ticker container - 16% height, sits 42% from top */
+        .ticker-container {
+            position: absolute;
+            top: 42%;
+            left: 0;
+            width: 100%;
+            height: 16%;
+            overflow: hidden;
+            z-index: 10;
+            pointer-events: none;
         }
 
-        .screenshot-button.visible {
-            display: block;
+        /* Cylindrical bars - FIX: 3x thicker = 9% each */
+        .ticker-bar-top {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 9%;
+            background: linear-gradient(to bottom,
+                #f0f0f0 0%,
+                #e0e0e0 10%,
+                #aaa 30%,
+                #666 50%,
+                #aaa 70%,
+                #e0e0e0 90%,
+                #f0f0f0 100%
+            );
         }
 
-        .screenshot-button:hover {
-            background: #000;
-            transform: translateY(-2px);
+        .ticker-bar-bottom {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 9%;
+            background: linear-gradient(to bottom,
+                #f0f0f0 0%,
+                #e0e0e0 10%,
+                #aaa 30%,
+                #666 50%,
+                #aaa 70%,
+                #e0e0e0 90%,
+                #f0f0f0 100%
+            );
         }
 
-        /* Variable display */
-        .variable {
-            font-size: 4vw;
-            color: #333;
-            margin: 1rem 0;
+        /* Text area between bars */
+        .ticker-text {
+            position: absolute;
+            top: 9%;
+            width: 100%;
+            height: 82%;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* FIX: 2x font size (was 4vh, now 8vh)
+           FIX: scroll speed 3x slower (was 20s, now 60s)
+           FIX: single pass - start at 100vw, end at -100% of text width
+           We use JS-driven animation so the text completes exactly once per cycle */
+        .fact-scroll {
+            display: inline-block;
+            white-space: nowrap;
+            font-size: 8vh;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            position: absolute;
+            left: 0;
+            text-shadow: 
+                2px 2px 6px rgba(0, 0, 0, 0.6),
+                0px 0px 12px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="formula-zone" id="formula-zone">
-            <div class="formula" id="formula"></div>
-            <div class="variable" id="variable"></div>
-            <div class="graphic" id="graphic"></div>
-            <button class="hint-button" id="hint-button" title="Show hint">💡</button>
-            <div class="hint-panel" id="hint-panel"></div>
-        </div>
+        <svg id="main-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- FIX: Top = darkest, Bottom = lightest, Left/Right = mid -->
+                <linearGradient id="grad-top" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#555;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="grad-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#d5d5d5;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="grad-left" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#777;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#aaa;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="grad-right" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#aaa;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#777;stop-opacity:1" />
+                </linearGradient>
+            </defs>
 
-        <div class="working-area">
-            <textarea 
-                class="working-input" 
-                id="working-input" 
-                placeholder="Your working..."
-                rows="3"
-            ></textarea>
-            <button class="screenshot-button" id="screenshot-button">📷 Screenshot</button>
+            <g id="box"></g>
+            <g id="pie"></g>
+            <g id="pi-symbol"></g>
+        </svg>
+
+        <div class="ticker-container">
+            <div class="ticker-bar-top"></div>
+            <div class="ticker-text">
+                <span class="fact-scroll" id="fact-text"></span>
+            </div>
+            <div class="ticker-bar-bottom"></div>
         </div>
     </div>
 
     <script>
-        // Formula library organized by difficulty
-        const FORMULAS = {
-            easy: [
-                { type: 'multiply', formula: 'π × n', hint: 'π ≈ 3.14159...\nMultiply π by n to get the answer.' },
-                { type: 'circumference', formula: '2πr', hint: 'Circumference of a circle:\nC = 2πr\nWhere r is the radius.' },
-                { type: 'diameter', formula: 'πd', hint: 'Circumference using diameter:\nC = πd\nWhere d is the diameter.' },
-                { type: 'divide', formula: 'n ÷ π', hint: 'Divide n by π.\nπ ≈ 3.14159...' },
-                { type: 'simple_add', formula: 'π + n', hint: 'Add π to n.\nπ ≈ 3.14159...' }
-            ],
-            medium: [
-                { type: 'area', formula: 'πr²', hint: 'Area of a circle:\nA = πr²\nWhere r is the radius.' },
-                { type: 'pi_e', formula: 'π × e × n', hint: 'e ≈ 2.71828...\nMultiply π, e, and n.' },
-                { type: 'pi_squared', formula: 'π² × n', hint: 'π² ≈ 9.8696...\nSquare π first, then multiply by n.' },
-                { type: 'sqrt_pi', formula: '√(π × n)', hint: 'Multiply π by n,\nthen take the square root.' },
-                { type: 'pi_cubed', formula: 'π³ × n', hint: 'π³ ≈ 31.006...\nCube π, then multiply by n.' },
-                { type: 'e_over_pi', formula: '(e/π) × n', hint: 'e/π ≈ 0.865...\nDivide e by π, then multiply by n.' }
-            ],
-            hard: [
-                { type: 'sector', formula: '(θ/360) × πr²', hint: 'Area of a sector:\nA = (θ/360) × πr²\nWhere θ is angle in degrees,\nr is radius.' },
-                { type: 'golden', formula: 'φ × π × n', hint: 'φ (golden ratio) ≈ 1.618...\nMultiply φ, π, and n.' },
-                { type: 'trig_pi', formula: 'sin(θ) × π × n', hint: 'Calculate sine of angle θ (in degrees),\nthen multiply by π and n.' },
-                { type: 'inscribed', formula: 'Inscribed ○', hint: 'Circle inscribed in a triangle.\nFind the inradius using:\nr = Area / semi-perimeter' },
-                { type: 'cos_pi', formula: 'cos(θ) × π × n', hint: 'Calculate cosine of angle θ,\nmultiply by π and n.' },
-                { type: 'tan_e', formula: 'tan(θ) × e × n', hint: 'Calculate tangent of angle θ,\nmultiply by e and n.' }
-            ],
-            expert: [
-                { type: 'sphere', formula: '(4/3)πr³', hint: 'Volume of a sphere:\nV = (4/3)πr³\nWhere r is the radius.' },
-                { type: 'complex_trig', formula: 'tan(θ) × e × π', hint: 'Calculate tangent of angle θ,\nmultiply by both e and π.' },
-                { type: 'nested', formula: '√(π² × e × n)', hint: 'Square π, multiply by e and n,\nthen take the square root of the result.' },
-                { type: 'inscribed_complex', formula: 'Inscribed ○ in △', hint: 'Circle inscribed in a triangle.\nGiven: two sides and one angle.\nFind inradius using trigonometry.' },
-                { type: 'cone', formula: '(1/3)πr²h', hint: 'Volume of a cone:\nV = (1/3)πr²h\nWhere r is radius, h is height.' },
-                { type: 'logarithm', formula: 'ln(π × e²) × n', hint: 'Natural logarithm of (π × e²),\nthen multiply by n.' }
-            ]
-        };
+        // FIX: Fact number = total minutes since midnight (0-1439)
+        // 00:00 = fact 0, 01:00 = fact 60, 01:01 = fact 61, 23:59 = fact 1439
+        const PI_FACTS = [
+            // 00:xx - Fact 0-59
+            "Pi is the ratio of a circle's circumference to its diameter.",
+            "The symbol π was first used by William Jones in 1706.",
+            "Pi is an irrational number — it never repeats or terminates.",
+            "Archimedes calculated pi to be between 3.1408 and 3.1429.",
+            "Pi is transcendental — it cannot be the root of any polynomial equation.",
+            "The first million digits of pi were calculated by 1973.",
+            "Pi Day is celebrated on March 14th (3/14) every year.",
+            "The value of pi to 39 decimal places is enough to calculate the circumference of the universe to within the width of a hydrogen atom.",
+            "Zu Chongzhi calculated pi to 7 decimal places in the 5th century — a record that stood for 900 years.",
+            "The word 'pi' comes from the Greek letter π, the first letter of the Greek word 'perimetros'.",
+            "Pi appears in the formula for a normal distribution in statistics.",
+            "Albert Einstein was born on Pi Day — March 14, 1879.",
+            "Pi has been calculated to over 100 trillion decimal places.",
+            "The first recorded use of a symbol for pi was by William Oughtred in 1647.",
+            "Pi is used in navigation, engineering, physics, and virtually every branch of science.",
+            "The probability that two randomly chosen integers are coprime is 6/π².",
+            "Ludolph van Ceulen spent much of his life calculating pi to 35 digits — these digits were engraved on his tombstone.",
+            "Pi appears in Euler's famous identity: e^(iπ) + 1 = 0.",
+            "The digits of pi pass all known tests for statistical randomness.",
+            "Ramanujan discovered remarkable formulas for pi in the early 20th century, some still used today.",
+            // 00:20 - Fact 20-39
+            "Pi is used in Fourier transforms, which underpin digital audio and image compression.",
+            "The Great Pyramid of Giza has a perimeter-to-height ratio close to 2π.",
+            "Pi appears in Heisenberg's uncertainty principle in quantum mechanics.",
+            "The first computer calculation of pi was performed in 1949 using ENIAC — 2,037 digits in 70 hours.",
+            "Pi is intimately connected to the geometry of circles, spheres, and all curved surfaces.",
+            "The Chudnovsky brothers calculated 4 billion digits of pi on a homemade supercomputer in 1994.",
+            "Pi is used to calculate the orbital periods of planets.",
+            "There are no repeating patterns known in the digits of pi.",
+            "Pi is hidden in the formula for Coulomb's Law, which describes the force between electric charges.",
+            "The number 3.14159... was known as 'the constant of the circle' for centuries.",
+            // 00:30
+            "Pi appears in the formula for gravitational waves detected by LIGO.",
+            "Memorizing pi digits is a competitive sport — the world record is over 70,000 digits.",
+            "The Basel problem, solved by Euler in 1734, showed that 1 + 1/4 + 1/9 + ... = π²/6.",
+            "Pi appears in the formula for the area of an ellipse: A = πab.",
+            "The circumference of the Earth is approximately 2π × 6,371 km.",
+            "Pi is used in signal processing to describe sine and cosine waves.",
+            "The Leibniz formula for pi: π/4 = 1 - 1/3 + 1/5 - 1/7 + ... converges very slowly.",
+            "Pi appears in Einstein's field equations of general relativity.",
+            "The Indian mathematician Madhava calculated pi to 11 decimal places around 1400 AD.",
+            "Pi is used in GPS calculations to determine positions on the curved surface of the Earth.",
+            // 00:40
+            "There are no occurrences of the sequence 123456 in the first million digits of pi.",
+            "The Gaussian integral, used in probability, equals √π.",
+            "Pi was first called 'π' because it is the first letter of 'periphery' and 'perimeter'.",
+            "A rational approximation of pi, 355/113, is accurate to 6 decimal places.",
+            "Pi shows up in the solution to the Buffon's needle problem in probability theory.",
+            "The area of a circle of radius 1 is exactly π.",
+            "Pi appears in the formula for the volume of a torus.",
+            "Supercomputers have been used to calculate pi as a test of computing power and accuracy.",
+            "The sequence 0123456789 first appears at position 17,387,594,880 in the digits of pi.",
+            "Pi is used in antenna design, acoustic engineering, and electromagnetic theory.",
+            // 00:50
+            "The ratio of pi to e (Euler's number) is approximately 1.1557.",
+            "Pi appears in the formula relating a pendulum's length to its period of oscillation.",
+            "The Machin formula, discovered in 1706, was used to compute pi for centuries.",
+            "Pi is used in the mathematical description of all circular and rotational motion.",
+            "The digit sequence 999999 appears at position 762 in pi — known as the Feynman Point.",
+            "Pi appears in Stirling's approximation for factorials.",
+            "The 100th digit of pi is 9.",
+            "Pi shows up in the formula for the surface area of a sphere: 4πr².",
+            "Napoleon is rumored to have been interested in pi — though historians debate this.",
+            "There are more digits of pi than there are atoms in the observable universe.",
+            // 01:00 (fact 60)
+            "Pi cannot be expressed as a fraction of two integers — this was proved by Lambert in 1761.",
+            "The first 144 digits of pi add up to 666 — a fun coincidence for mathematicians.",
+            "Pi appears in the Wallis product: π/2 = (2/1)(2/3)(4/3)(4/5)(6/5)(6/7)...",
+            "The Egyptians approximated pi as (16/9)² ≈ 3.16 around 1650 BC.",
+            "Pi shows up in the formula for black hole entropy in Hawking's thermodynamics.",
+            "The digits of pi contain every possible finite number sequence — theoretically.",
+            "Pi is used to calculate the resonant frequencies of musical instruments.",
+            "Archimedes was the first to rigorously approximate pi using a 96-sided polygon.",
+            "Pi appears in the formula for the deflection of starlight around massive objects.",
+            "The number of seconds in a year is approximately π × 10^7.",
+            // Add more facts as index grows - for now cycle through with fallback
+        ];
 
-        const PI = Math.PI;
-        const E = Math.E;
-        const PHI = (1 + Math.sqrt(5)) / 2; // Golden ratio
-
-        // Get difficulty based on minute distribution
-        function getDifficulty(minute) {
-            const rand = (minute * 17 + 53) % 100; // Deterministic pseudo-random
-            if (rand < 35) return 'easy';
-            if (rand < 75) return 'medium';
-            if (rand < 95) return 'hard';
-            return 'expert';
+        // Pad array to 1440 by cycling through available facts - no markers
+        while (PI_FACTS.length < 1440) {
+            PI_FACTS.push(PI_FACTS[PI_FACTS.length % 70]);
         }
 
-        // Pick formula for current minute
-        function pickFormula(minute, difficulty) {
-            const formulas = FORMULAS[difficulty];
-            const index = minute % formulas.length;
-            return formulas[index];
+        // Color palette for facts (24 colors, one per hour)
+        const FACT_COLORS = [
+            '#4A90E2', '#7B68EE', '#50C878', '#FF6B6B',
+            '#4ECDC4', '#F5A623', '#E67E22', '#E74C3C',
+            '#9B59B6', '#1ABC9C', '#3498DB', '#E91E63',
+            '#2ECC71', '#F39C12', '#D35400', '#8E44AD',
+            '#16A085', '#2980B9', '#C0392B', '#27AE60',
+            '#D98880', '#85C1E9', '#A9DFBF', '#F9E79F'
+        ];
+
+        // Scroll animation state
+        let scrollAnimation = null;
+
+        function drawPerspectiveBox() {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            const bx1 = vw * 0.25;
+            const by1 = vh * 0.25;
+            const bx2 = vw * 0.75;
+            const by2 = vh * 0.75;
+
+            const box = document.getElementById('box');
+            box.innerHTML = '';
+
+            // FIX: No stroke on trapezoids or back panel
+            const sides = [
+                // Top trapezoid - darkest
+                { points: `0,0 ${vw},0 ${bx2},${by1} ${bx1},${by1}`, fill: 'url(#grad-top)' },
+                // Bottom trapezoid - lightest
+                { points: `0,${vh} ${vw},${vh} ${bx2},${by2} ${bx1},${by2}`, fill: 'url(#grad-bottom)' },
+                // Left trapezoid - mid
+                { points: `0,0 ${bx1},${by1} ${bx1},${by2} 0,${vh}`, fill: 'url(#grad-left)' },
+                // Right trapezoid - mid
+                { points: `${vw},0 ${bx2},${by1} ${bx2},${by2} ${vw},${vh}`, fill: 'url(#grad-right)' },
+            ];
+
+            sides.forEach(s => {
+                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                poly.setAttribute('points', s.points);
+                poly.setAttribute('fill', s.fill);
+                poly.setAttribute('stroke', 'none'); // FIX: no outline
+                box.appendChild(poly);
+            });
+
+            // Back panel - no stroke
+            const back = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            back.setAttribute('x', bx1);
+            back.setAttribute('y', by1);
+            back.setAttribute('width', vw * 0.5);
+            back.setAttribute('height', vh * 0.5);
+            back.setAttribute('fill', '#c8c8c8');
+            back.setAttribute('stroke', 'none'); // FIX: no outline
+            box.appendChild(back);
         }
 
-        // Solve backwards to find variable
-        function solveForVariable(time, formulaObj) {
-            const T = parseInt(time);
-            
-            switch(formulaObj.type) {
-                case 'multiply':
-                    return { var: 'n', value: (T / PI).toFixed(2) };
-                
-                case 'circumference':
-                    return { var: 'r', value: (T / (2 * PI)).toFixed(2), graphic: 'circle' };
-                
-                case 'diameter':
-                    return { var: 'd', value: (T / PI).toFixed(2), graphic: 'circle' };
-                
-                case 'divide':
-                    return { var: 'n', value: (T * PI).toFixed(2) };
-                
-                case 'simple_add':
-                    return { var: 'n', value: (T - PI).toFixed(2) };
-                
-                case 'area':
-                    return { var: 'r', value: Math.sqrt(T / PI).toFixed(2), graphic: 'circle' };
-                
-                case 'pi_e':
-                    return { var: 'n', value: (T / (PI * E)).toFixed(2) };
-                
-                case 'pi_squared':
-                    return { var: 'n', value: (T / (PI * PI)).toFixed(2) };
-                
-                case 'sqrt_pi':
-                    const n_sqrt = (T * T) / PI;
-                    return { var: 'n', value: n_sqrt.toFixed(2) };
-                
-                case 'pi_cubed':
-                    return { var: 'n', value: (T / (PI * PI * PI)).toFixed(2) };
-                
-                case 'e_over_pi':
-                    return { var: 'n', value: (T / (E / PI)).toFixed(2) };
-                
-                case 'sector':
-                    // Assume θ = 90 for variety
-                    const theta = 60 + (T % 60); // Varies between 60-120 degrees
-                    const r_sector = Math.sqrt(T / ((theta/360) * PI));
-                    return { var: 'r', value: r_sector.toFixed(2), var2: 'θ', value2: theta.toString(), graphic: 'sector' };
-                
-                case 'golden':
-                    return { var: 'n', value: (T / (PHI * PI)).toFixed(2) };
-                
-                case 'trig_pi':
-                    // Vary angle based on time
-                    const angle1 = 15 + (T % 60);
-                    const n_trig = T / (Math.sin(angle1 * PI / 180) * PI);
-                    return { var: 'n', value: n_trig.toFixed(2), var2: 'θ', value2: angle1.toString() };
-                
-                case 'cos_pi':
-                    const angle2 = 20 + (T % 50);
-                    const n_cos = T / (Math.cos(angle2 * PI / 180) * PI);
-                    return { var: 'n', value: n_cos.toFixed(2), var2: 'θ', value2: angle2.toString() };
-                
-                case 'tan_e':
-                    const angle3 = 25 + (T % 40);
-                    const n_tan = T / (Math.tan(angle3 * PI / 180) * E);
-                    return { var: 'n', value: n_tan.toFixed(2), var2: 'θ', value2: angle3.toString() };
-                
-                case 'inscribed':
-                    // Equilateral triangle with inscribed circle
-                    // r = a/(2√3), so a = 2√3 * r
-                    const r_insc = T / PI;
-                    const a = 2 * Math.sqrt(3) * r_insc;
-                    return { var: 'a', value: a.toFixed(2), graphic: 'inscribed' };
-                
-                case 'sphere':
-                    return { var: 'r', value: Math.cbrt((3 * T) / (4 * PI)).toFixed(2), graphic: 'sphere' };
-                
-                case 'complex_trig':
-                    const angle4 = 35 + (T % 35);
-                    return { var: 'θ', value: angle4.toString() };
-                
-                case 'nested':
-                    const n_nested = T * T / (PI * PI * E);
-                    return { var: 'n', value: n_nested.toFixed(2) };
-                
-                case 'inscribed_complex':
-                    // Triangle with two sides and angle
-                    const side1 = 10 + (T % 20);
-                    const side2 = 12 + (T % 18);
-                    const angle5 = 40 + (T % 40);
-                    return { 
-                        var: 'a', value: side1.toString(),
-                        var2: 'b', value2: side2.toString(),
-                        var3: 'α', value3: angle5.toString() + '°',
-                        graphic: 'inscribed_complex'
-                    };
-                
-                case 'cone':
-                    // Assume h = 2r for simplicity
-                    const r_cone = Math.cbrt((3 * T) / (2 * PI));
-                    const h_cone = 2 * r_cone;
-                    return { var: 'r', value: r_cone.toFixed(2), var2: 'h', value2: h_cone.toFixed(2) };
-                
-                case 'logarithm':
-                    const ln_val = Math.log(PI * E * E);
-                    return { var: 'n', value: (T / ln_val).toFixed(2) };
-                
-                default:
-                    return { var: 'n', value: (T / PI).toFixed(2) };
-            }
+        function drawPiSymbol() {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            const piGroup = document.getElementById('pi-symbol');
+            piGroup.innerHTML = '';
+
+            // Large π text centered on screen
+            // Size: 70% of viewport height so it dominates behind the ribbon
+            const fontSize = vh * 0.7 * 0.75;
+
+            const piText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            piText.setAttribute('x', vw / 2);
+            piText.setAttribute('y', (vh / 2) - (fontSize * 0.15));
+            piText.setAttribute('text-anchor', 'middle');
+            piText.setAttribute('dominant-baseline', 'central');
+            piText.setAttribute('font-family', 'Georgia, "Times New Roman", serif');
+            piText.setAttribute('font-size', fontSize);
+            piText.setAttribute('font-weight', 'bold');
+            piText.setAttribute('fill', '#555555');
+            piText.setAttribute('opacity', '0.40');
+            piText.textContent = 'π';
+
+            piGroup.appendChild(piText);
         }
 
-        // Generate SVG graphic
-        function generateGraphic(type, vars, difficulty) {
-            const size = 300;
-            const center = size / 2;
-            
-            if (type === 'circle') {
-                const r = parseFloat(vars.value);
-                const scale = Math.min(120, size / (2 * r + 40));
-                const displayR = r * scale;
-                
-                return `
-                    <svg width="${size}" height="${size}" class="${difficulty}">
-                        <circle cx="${center}" cy="${center}" r="${displayR}" 
-                            fill="none" stroke="#1a1a1a" stroke-width="3"/>
-                        <line x1="${center}" y1="${center}" x2="${center + displayR}" y2="${center}"
-                            stroke="#4a4a4a" stroke-width="2" stroke-dasharray="5,5"/>
-                        <text x="${center + displayR/2}" y="${center - 15}" 
-                            fill="#1a1a1a" font-size="24" font-weight="500" text-anchor="middle">${vars.var} = ${vars.value}</text>
-                    </svg>
-                `;
-            }
-            
-            if (type === 'sector') {
-                const r = parseFloat(vars.value);
-                const theta = parseFloat(vars.value2);
-                const scale = Math.min(100, size / (2 * r + 60));
-                const displayR = r * scale;
-                const endAngle = (90 - theta) * Math.PI / 180;
-                const endX = center + displayR * Math.cos(endAngle);
-                const endY = center - displayR * Math.sin(endAngle);
-                const largeArc = theta > 180 ? 1 : 0;
-                
-                return `
-                    <svg width="${size}" height="${size}" class="${difficulty}">
-                        <path d="M ${center},${center} L ${center + displayR},${center} A ${displayR},${displayR} 0 ${largeArc},0 ${endX},${endY} Z"
-                            fill="rgba(26,26,26,0.08)" stroke="#1a1a1a" stroke-width="3"/>
-                        <line x1="${center}" y1="${center}" x2="${center + displayR}" y2="${center}"
-                            stroke="#4a4a4a" stroke-width="2"/>
-                        <line x1="${center}" y1="${center}" x2="${endX}" y2="${endY}"
-                            stroke="#4a4a4a" stroke-width="2"/>
-                        <text x="${center}" y="${center + displayR + 35}" 
-                            fill="#1a1a1a" font-size="20" font-weight="500" text-anchor="middle">r = ${vars.value}, θ = ${vars.value2}°</text>
-                    </svg>
-                `;
-            }
-            
-            if (type === 'inscribed') {
-                const a = parseFloat(vars.value);
-                const scale = Math.min(180, size / (a + 60));
-                const displayA = a * scale;
-                const h = displayA * Math.sqrt(3) / 2;
-                const r = displayA / (2 * Math.sqrt(3));
-                
-                return `
-                    <svg width="${size}" height="${size}" class="${difficulty}">
-                        <polygon points="${center},${center - 2*h/3} ${center - displayA/2},${center + h/3} ${center + displayA/2},${center + h/3}"
-                            fill="none" stroke="#1a1a1a" stroke-width="3"/>
-                        <circle cx="${center}" cy="${center}" r="${r}"
-                            fill="rgba(26,26,26,0.05)" stroke="#4a4a4a" stroke-width="2" stroke-dasharray="5,5"/>
-                        <line x1="${center - displayA/2}" y1="${center + h/3}" x2="${center + displayA/2}" y2="${center + h/3}"
-                            stroke="#666" stroke-width="1"/>
-                        <text x="${center}" y="${center + h/3 + 35}" 
-                            fill="#1a1a1a" font-size="20" font-weight="500" text-anchor="middle">a = ${vars.value}</text>
-                    </svg>
-                `;
-            }
-            
-            if (type === 'inscribed_complex') {
-                // Complex triangle with two sides and angle
-                const a = parseFloat(vars.value);
-                const b = parseFloat(vars.value2);
-                const angle = parseFloat(vars.value3);
-                const scale = Math.min(150, size / Math.max(a, b, 50));
-                
-                const p1 = { x: center - a*scale/2, y: center + 50 };
-                const p2 = { x: center + a*scale/2, y: center + 50 };
-                const angleRad = angle * Math.PI / 180;
-                const p3 = {
-                    x: p1.x + b*scale * Math.cos(angleRad),
-                    y: p1.y - b*scale * Math.sin(angleRad)
-                };
-                
-                return `
-                    <svg width="${size}" height="${size}" class="${difficulty}">
-                        <defs>
-                            <filter id="shadow-expert">
-                                <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-                                <feOffset dx="4" dy="4" result="offsetblur"/>
-                                <feComponentTransfer>
-                                    <feFuncA type="linear" slope="0.4"/>
-                                </feComponentTransfer>
-                                <feMerge>
-                                    <feMergeNode/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}"
-                            fill="none" stroke="#1a1a1a" stroke-width="3" filter="url(#shadow-expert)"/>
-                        <text x="${(p1.x + p2.x)/2}" y="${p1.y + 25}" 
-                            fill="#1a1a1a" font-size="18" font-weight="500" text-anchor="middle">a = ${vars.value}</text>
-                        <text x="${(p1.x + p3.x)/2 - 20}" y="${(p1.y + p3.y)/2}" 
-                            fill="#1a1a1a" font-size="18" font-weight="500">b = ${vars.value2}</text>
-                        <text x="${p1.x + 30}" y="${p1.y - 10}" 
-                            fill="#1a1a1a" font-size="18" font-weight="500">α = ${vars.value3}</text>
-                    </svg>
-                `;
-            }
-            
-            if (type === 'sphere') {
-                const r = parseFloat(vars.value);
-                const scale = Math.min(120, size / (2 * r + 40));
-                const displayR = r * scale;
-                
-                return `
-                    <svg width="${size}" height="${size}" class="${difficulty}">
-                        <defs>
-                            <radialGradient id="sphereGrad">
-                                <stop offset="0%" style="stop-color:#f0f0f0;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:0.1" />
-                            </radialGradient>
-                        </defs>
-                        <circle cx="${center}" cy="${center}" r="${displayR}" 
-                            fill="url(#sphereGrad)" stroke="#1a1a1a" stroke-width="3"/>
-                        <ellipse cx="${center}" cy="${center}" rx="${displayR}" ry="${displayR * 0.3}"
-                            fill="none" stroke="#4a4a4a" stroke-width="1.5" stroke-dasharray="5,5"/>
-                        <text x="${center}" y="${center + displayR + 30}" 
-                            fill="#1a1a1a" font-size="22" font-weight="500" text-anchor="middle">r = ${vars.value}</text>
-                    </svg>
-                `;
-            }
-            
-            return '';
-        }
+        function drawPieClock() {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const isPortrait = vh > vw;
 
-        // Display formula
-        function displayFormula() {
+            const backPanelWidth = vw * 0.5;
+            const backPanelHeight = vh * 0.5;
+
+            let circleDiameter = isPortrait ? backPanelHeight * 1.1 : backPanelWidth * 1.1;
+            const radius = circleDiameter / 2;
+            const cx = vw / 2;
+            const cy = vh / 2;
+
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = hours + minutes;
-            const minuteNum = parseInt(minutes);
-            
-            const difficulty = getDifficulty(minuteNum);
-            const formulaObj = pickFormula(minuteNum, difficulty);
-            const vars = solveForVariable(timeStr, formulaObj);
-            
-            // Display formula
-            const formulaEl = document.getElementById('formula');
-            formulaEl.textContent = formulaObj.formula;
-            formulaEl.className = `formula ${difficulty}`;
-            
-            // Display variable
-            const variableEl = document.getElementById('variable');
-            let varText = `${vars.var} = ${vars.value}`;
-            if (vars.var2) {
-                varText += `,  ${vars.var2} = ${vars.value2}`;
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+
+            const totalMinutes = ((hours % 12) * 60) + minutes;
+            const angle = (totalMinutes / 720) * 360;
+
+            const isAM = hours < 12;
+            const bgColor = isAM ? '#111111' : '#f5f5f5';
+            const sliceColor = isAM ? '#f5f5f5' : '#111111';
+
+            const pie = document.getElementById('pie');
+            pie.innerHTML = '';
+
+            // Background circle - no stroke
+            const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            bg.setAttribute('cx', cx);
+            bg.setAttribute('cy', cy);
+            bg.setAttribute('r', radius);
+            bg.setAttribute('fill', bgColor);
+            bg.setAttribute('stroke', 'none');
+            pie.appendChild(bg);
+
+            if (angle > 0 && angle < 360) {
+                const startRad = (-90 * Math.PI) / 180;
+                const endRad = ((-90 + angle) * Math.PI) / 180;
+
+                const x1 = cx + radius * Math.cos(startRad);
+                const y1 = cy + radius * Math.sin(startRad);
+                const x2 = cx + radius * Math.cos(endRad);
+                const y2 = cy + radius * Math.sin(endRad);
+                const largeArc = angle > 180 ? 1 : 0;
+
+                const slice = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                slice.setAttribute('d', `M ${cx},${cy} L ${x1},${y1} A ${radius},${radius} 0 ${largeArc},1 ${x2},${y2} Z`);
+                slice.setAttribute('fill', sliceColor);
+                pie.appendChild(slice);
             }
-            if (vars.var3) {
-                varText += `,  ${vars.var3} = ${vars.value3}`;
-            }
-            variableEl.textContent = varText;
-            
-            // Display graphic
-            const graphicEl = document.getElementById('graphic');
-            if (vars.graphic) {
-                graphicEl.innerHTML = generateGraphic(vars.graphic, vars, difficulty);
-            } else {
-                graphicEl.innerHTML = '';
-            }
-            
-            // Setup hint
-            const hintPanel = document.getElementById('hint-panel');
-            hintPanel.textContent = formulaObj.hint;
         }
 
-        // Toggle hint
-        document.getElementById('hint-button').addEventListener('click', function() {
-            const panel = document.getElementById('hint-panel');
-            panel.classList.toggle('visible');
-        });
+        function startScroll(text, color) {
+            const el = document.getElementById('fact-text');
+            const container = el.parentElement;
 
-        // Show screenshot button when typing
-        const workingInput = document.getElementById('working-input');
-        const screenshotButton = document.getElementById('screenshot-button');
-        
-        workingInput.addEventListener('input', function() {
-            if (this.value.trim().length > 0) {
-                screenshotButton.classList.add('visible');
-            } else {
-                screenshotButton.classList.remove('visible');
+            el.textContent = text;
+            el.style.color = color;
+
+            // Cancel any running animation
+            if (scrollAnimation) {
+                cancelAnimationFrame(scrollAnimation);
+                scrollAnimation = null;
             }
-        });
 
-        // Screenshot functionality
-        screenshotButton.addEventListener('click', async function() {
-            // Modern way: use native share or download
-            try {
-                const canvas = await html2canvas(document.querySelector('.container'));
-                canvas.toBlob(function(blob) {
-                    if (navigator.share) {
-                        const file = new File([blob], 'pi-puzzle.png', { type: 'image/png' });
-                        navigator.share({
-                            files: [file],
-                            title: 'Pi Puzzle Solution',
-                            text: 'Check out my solution!'
-                        });
-                    } else {
-                        // Download fallback
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'pi-puzzle.png';
-                        a.click();
-                        URL.revokeObjectURL(url);
+            // Wait for text to render, then measure and animate
+            requestAnimationFrame(() => {
+                const textWidth = el.offsetWidth;
+                const containerWidth = container.offsetWidth;
+
+                // Total travel = start at right edge to end fully off left edge
+                const startX = containerWidth;
+                const endX = -textWidth;
+                const totalDistance = startX - endX;
+
+                // FIX: 30 seconds for one complete pass (double speed)
+                const duration = 30000;
+                const startTime = performance.now();
+
+                function animate(now) {
+                    const elapsed = now - startTime;
+                    const progress = elapsed / duration;
+
+                    if (progress >= 1) {
+                        // One pass complete - restart with fresh fact check
+                        updateFact();
+                        return;
                     }
-                });
-            } catch (e) {
-                alert('Screenshot feature requires html2canvas library. Use browser screenshot instead!');
-            }
-        });
 
-        // Initialize
-        displayFormula();
-        
-        // Update every minute
-        setInterval(displayFormula, 60000);
+                    const x = startX - (progress * totalDistance);
+                    el.style.transform = `translateX(${x}px)`;
+                    scrollAnimation = requestAnimationFrame(animate);
+                }
+
+                scrollAnimation = requestAnimationFrame(animate);
+            });
+        }
+
+        function updateFact() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const hh = String(hours).padStart(2, '0');
+            const mm = String(minutes).padStart(2, '0');
+
+            // FIX: fact number = total minutes since midnight
+            const factIndex = hours * 60 + minutes; // 0-1439
+            const fact = PI_FACTS[factIndex] || "Pi has been calculated to over 100 trillion digits.";
+
+            // FIX: Color based on hour (24 hour palette)
+            const color = FACT_COLORS[hours % 24];
+
+            // FIX: More space between time and fact text
+            const factText = `${hh}:${mm}          FACT #${factIndex}:  ${fact.toUpperCase()}               `;
+
+            startScroll(factText, color);
+        }
+
+        function init() {
+            drawPerspectiveBox();
+            drawPiSymbol();
+            drawPieClock();
+            updateFact();
+        }
+
+        init();
+
+        // Update pie every second
+        setInterval(drawPieClock, 1000);
+
+        // Redraw box on resize
+        window.addEventListener('resize', init);
     </script>
 </body>
 </html>
